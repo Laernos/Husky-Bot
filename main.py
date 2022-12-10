@@ -13,12 +13,14 @@ def run():
     async def on_ready():
         logger.info(f'User: {bot.user} (ID: {bot.user.id})')
 
+        for cog_file in settings.COGS_DIR.glob("*.py"):
+            if cog_file.name != "__init__.py":
+                await bot.load_extension(f"cogs.{cog_file.name[:-3]}")        
+
         bot.tree.copy_global_to(guild=settings.GUILDS_ID)
         await bot.tree.sync(guild=settings.GUILDS_ID)
 
-        for cog_file in settings.COGS_DIR.glob("*.py"):
-            if cog_file.name != "__init__.py":
-                await bot.load_extension(f"cogs.{cog_file.name[:-3]}")
+
 
     @bot.command()
     async def reload(ctx, cog:str):
