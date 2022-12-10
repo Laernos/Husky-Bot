@@ -1,6 +1,7 @@
 import settings
 import discord
 from discord.ext import commands
+from discord import app_commands
 
 logger= settings.logging.getLogger('bot')
 
@@ -20,13 +21,17 @@ def run():
                 await bot.load_extension(f"cogs.{cog_file.name[:-3]}")
 
     @bot.command()
+    async def reload(ctx, cog:str):
+        await bot.reload_extension(f'cogs.{cog.lower()}')
+
+    @bot.command()
     async def test(ctx):
         await ctx.send('Working!')
 
 
     @bot.hybrid_command()
     async def ping(ctx):
-        await ctx.send("pong")
+        await ctx.send("pong", ephemeral=True)
         
     @bot.tree.command()
     async def ciao(interaction: discord.Interaction):
@@ -41,7 +46,13 @@ def run():
     @bot.tree.context_menu(name="Report Message")
     async def report_message(interaction: discord.Interaction, message: discord.Message):
         await interaction.response.send_message(f"Message reported ", ephemeral=True)
-    
+
+    @bot.tree.command(description='Shows member count')
+    async def say(interaction: discord.Interaction):
+        member_count = len(interaction.guild.members)
+        embed=discord.Embed(title="Member Count", description=(f"There is {member_count} people in this server. "), color=0xff0000)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
     bot.run(settings.DISCORD_API_SECRET, root_logger=True)
 
