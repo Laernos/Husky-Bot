@@ -1,0 +1,2 @@
+# Husky
+ A Discord Bot
