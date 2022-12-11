@@ -1,16 +1,24 @@
 import settings
 import discord
-from discord.ext import commands
-from discord import app_commands
+from discord.ext import commands, tasks
+from discord import app_commands, Activity, ActivityType
+from itertools import cycle
+
 
 logger= settings.logging.getLogger('bot')
+
+status= cycle(['hello', 'gotten', 'annen'])
 
 def run():
     intents= discord.Intents.all()
     bot = commands.Bot(command_prefix='!', intents=intents)
 
+
+
     @bot.event
     async def on_ready():
+        change_status.start()
+
         logger.info(f'User: {bot.user} (ID: {bot.user.id})')
 
         for cog_file in settings.COGS_DIR.glob("*.py"):
@@ -20,6 +28,9 @@ def run():
         bot.tree.copy_global_to(guild=settings.GUILDS_ID)
         await bot.tree.sync(guild=settings.GUILDS_ID)
 
+    @tasks.loop(seconds=5)
+    async def change_status():
+        await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(next(status)))
 
 
     @bot.command()
@@ -39,8 +50,6 @@ def run():
     async def ciao(interaction: discord.Interaction):
         await interaction.response.send_message(f"Ciao! {interaction.user.mention}", ephemeral=True)
 
-
-
     @bot.tree.context_menu(name="Show join date")
     async def get_joined_date(interaction: discord.Interaction, member: discord.Member):
         await interaction.response.send_message(f"Member joined: {discord.utils.format_dt(member.joined_at)} ", ephemeral=True)
@@ -49,11 +58,8 @@ def run():
     async def report_message(interaction: discord.Interaction, message: discord.Message):
         await interaction.response.send_message(f"Message reported ", ephemeral=True)
 
-    @bot.tree.command(description='Shows member count')
-    async def say(interaction: discord.Interaction):
-        member_count = len(interaction.guild.members)
-        embed=discord.Embed(title="Member Count", description=(f"There is {member_count} people in this server. "), color=0xff0000)
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
 
 
     bot.run(settings.DISCORD_API_SECRET, root_logger=True)
