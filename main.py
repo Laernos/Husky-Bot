@@ -3,6 +3,11 @@ import discord
 from discord.ext import commands, tasks
 from discord import app_commands, Activity, ActivityType
 from itertools import cycle
+import pymongo
+
+
+bot = pymongo.MongoClient(settings.MONGO_TOKEN)
+db = bot.user_messages
 
 
 logger= settings.logging.getLogger('bot')
