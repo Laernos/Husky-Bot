@@ -1,31 +1,56 @@
-import settings
+#Third Party Libraries
 import discord
 from discord.ext import commands, tasks
 from discord import app_commands, Activity, ActivityType
 from itertools import cycle
-import pymongo
+from pathlib import Path
+import motor.motor_asyncio
+
+#Local Code
+import settings
+import json_loader
+from mongo import Document
 
 
-bot = pymongo.MongoClient(settings.MONGO_TOKEN)
-db = bot.user_messages
+cwd = Path(__file__).parents[0]
+cwd = str(cwd)
+DEFAULTPREFIX = '!'
+
 
 
 logger= settings.logging.getLogger('bot')
 
 status= cycle(['hello', 'gotten', 'annen'])
 
+async def get_prefix(bot, message):
+    # If dm's
+    if not message.guild:
+        return commands.when_mentioned_or("!")(bot, message)
+    try:
+        data = await bot.config.find(message.guild.id)
+    # Make sure we have a useable prefix
+        if not data or "prefix" not in data:
+            return commands.when_mentioned_or("!")(bot, message)
+        return commands.when_mentioned_or(data["prefix"])(bot, message)
+    except:
+        return commands.when_mentioned_or("!")(bot, message)
+
 def run():
     intents= discord.Intents.all()
-    bot = commands.Bot(command_prefix='!', intents=intents)
+    bot = commands.Bot(command_prefix=get_prefix, owner_id = 344034871230070784,intents=intents)
 
 
 
     @bot.event
     async def on_ready():
+        
+        bot.mongo= motor.motor_asyncio.AsyncIOMotorClient(str(settings.MONGO_TOKEN))
+        bot.db= bot.mongo['database']
+        bot.config = Document(bot.db, 'servers')
+        bot.invites = Document(bot.db, "invites")
         change_status.start()
-
-        logger.info(f'User: {bot.user} (ID: {bot.user.id})')
-
+        
+        logger.info(f'User: {bot.user} (ID: {bot.user.id})') 
         for cog_file in settings.COGS_DIR.glob("*.py"):
             if cog_file.name != "__init__.py":
                 await bot.load_extension(f"cogs.{cog_file.name[:-3]}")        
@@ -39,7 +64,7 @@ def run():
 
 
     @bot.command()
-    async def reload(ctx, cog:str):
+    async def reloa(ctx, cog:str):
         await bot.reload_extension(f'cogs.{cog.lower()}')
 
     @bot.command()
@@ -49,7 +74,7 @@ def run():
 
     @bot.hybrid_command()
     async def ping(ctx):
-        await ctx.send("pong", ephemeral=True)
+        await ctx.send(f"pong {bot.owner_id}, {len(bot.guilds)}", ephemeral=True)
         
     @bot.tree.command()
     async def ciao(interaction: discord.Interaction):
@@ -62,6 +87,12 @@ def run():
     @bot.tree.context_menu(name="Report Message")
     async def report_message(interaction: discord.Interaction, message: discord.Message):
         await interaction.response.send_message(f"Message reported ", ephemeral=True)
+
+    @bot.tree.context_menu(name="Web Status")
+    async def web_status(interaction: discord.Interaction, member: discord.Member):
+        await interaction.response.send_message(f" asd {member.web_status} {member.is_on_mobile()} ", ephemeral=True)
+
+
 
 
 

@@ -14,10 +14,6 @@ class Error(commands.Cog):
         else:
             await ctx.reply(error, ephemeral=True)
 
-
-
-
-
     
 
 async def setup(bot):
