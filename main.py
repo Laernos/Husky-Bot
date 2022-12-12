@@ -10,6 +10,7 @@ import motor.motor_asyncio
 import settings
 import json_loader
 from mongo import Document
+import emotes
 
 
 cwd = Path(__file__).parents[0]
@@ -20,7 +21,7 @@ DEFAULTPREFIX = '!'
 
 logger= settings.logging.getLogger('bot')
 
-status= cycle(['hello', 'gotten', 'annen'])
+status= cycle(['Efeyi', 'Gotteeeeen', 'Sikiyorum'])
 
 async def get_prefix(bot, message):
     # If dm's
@@ -64,18 +65,14 @@ def run():
         bot.tree.copy_global_to(guild=settings.GUILDS_ID)
         await bot.tree.sync(guild=settings.GUILDS_ID)
 
-    @tasks.loop(seconds=5)
+    @tasks.loop(seconds=3)
     async def change_status():
         await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(next(status)))
 
 
     @bot.command()
-    async def reloa(ctx, cog:str):
-        await bot.reload_extension(f'cogs.{cog.lower()}')
-
-    @bot.command()
-    async def test(ctx):
-        await ctx.send('Working!')
+    async def test(ctx, member:discord.Member):
+        await ctx.send(f'Working! {member.status}')
 
 
     @bot.hybrid_command()
@@ -94,9 +91,16 @@ def run():
     async def report_message(interaction: discord.Interaction, message: discord.Message):
         await interaction.response.send_message(f"Message reported ", ephemeral=True)
 
+    @bot.tree.context_menu(name="asd")
+    async def asd(interaction: discord.Interaction, member: discord.Member):
+        await interaction.response.send_message(f"Member joined: {interaction.user.status} {member.status} ", ephemeral=True)   
+
     @bot.tree.context_menu(name="Web Status")
     async def web_status(interaction: discord.Interaction, member: discord.Member):
-        await interaction.response.send_message(f" asd {member.web_status} {member.is_on_mobile()} ", ephemeral=True)
+        mobstatus= member.is_on_mobile()
+        webstatus= member.web_status
+        state= member.status        
+        await interaction.response.send_message(f" Status: {state}\n Web Status: {webstatus}\n Mobil Status: {mobstatus}\n Desktop Status: {member.desktop_status}\n user: {member} ", ephemeral=True)
 
 
 
