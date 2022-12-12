@@ -39,7 +39,7 @@ def run():
     intents= discord.Intents.all()
     bot = commands.Bot(command_prefix=get_prefix, owner_id = 344034871230070784,intents=intents)
 
-
+    bot.muted_users= {}
 
     @bot.event
     async def on_ready():
@@ -47,7 +47,13 @@ def run():
         bot.mongo= motor.motor_asyncio.AsyncIOMotorClient(str(settings.MONGO_TOKEN))
         bot.db= bot.mongo['database']
         bot.config = Document(bot.db, 'servers')
-        bot.invites = Document(bot.db, "invites")
+        bot.invites = Document(bot.db, 'invites')
+        bot.mutes = Document(bot.db, 'mutes')
+
+        currentMutes = await bot.mutes.get_all()
+        for mute in currentMutes:
+            bot.muted_users[mute["_id"]] = mute
+
         change_status.start()
         
         logger.info(f'User: {bot.user} (ID: {bot.user.id})') 
