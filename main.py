@@ -50,6 +50,8 @@ def run():
         bot.config = Document(bot.db, 'servers')
         bot.invites = Document(bot.db, 'invites')
         bot.mutes = Document(bot.db, 'mutes')
+        bot.economy = Document(bot.db, 'economy')
+        bot.server_config = Document(bot.db, 'Server Configs')
 
         currentMutes = await bot.mutes.get_all()
         for mute in currentMutes:
