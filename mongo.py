@@ -143,7 +143,41 @@ class Document:
         field = document[field]
         field_value= field[field_value]
         return field_value
-     
+#----------------------------------------------------------------------------------------------------------------------------------------
+    async def update_document(self, id, document):
+        key = {"id": id}
+        server= await self.db.update_one(key)
+        document= server[document]
+        return document  
+
+    async def update_field(self, id, document, field):
+        key = {"id": id}
+        server= await self.db.update_one(key)
+        document= server[document]
+        field = document[field]
+        return field 
+
+    async def update_field_value(self, id, document, field, field_value):
+        key = {"id": id}
+        server= await self.db.update_one(key)
+        document= server[document]
+        field = document[field]
+        field_value= field[field_value]
+        return field_value   
+#----------------------------------------------------------------------------------------------------------------------------------------
+    async def delete_document(self, id, document):
+        key = {"id": id}
+        server= await self.db.delete_one(key)
+        document= server[document]
+        return document  
+
+    async def update_field(self, id, document, field):
+        key = {"id": id}
+        server= await self.db.delete_one(key)
+        document= server[document]
+        field = document[field]
+        return field 
+
 
     @staticmethod
     def __ensure_dict(data):
