@@ -32,7 +32,7 @@ class Document:
         return await self.db.find(filter_dict, *args, **kwargs).to_list(None)
 
     async def find_by_id(self, data_id):
-        return await self.db.find_one({"_id": data_id})
+        return await self.db.find_one({"id": data_id})
 
     async def find_by_custom(self, filter_dict):
         self.__ensure_dict(filter_dict)
@@ -120,6 +120,30 @@ class Document:
     # <-- Private methods -->
     async def __get_raw(self, data_id):
         return await self.db.find_one({"_id": data_id})
+#----------------------------------------------------------------------------------------------------------------------------------------
+#        MY OWN DEFS
+#----------------------------------------------------------------------------------------------------------------------------------------
+    async def find_document(self, id, document):
+        key = {"id": id}
+        server= await self.db.find_one(key)
+        document= server[document]
+        return document     
+
+    async def find_field(self, id, document, field):
+        key = {"id": id}
+        server= await self.db.find_one(key)
+        document= server[document]
+        field = document[field]
+        return field 
+
+    async def find_field_value(self, id, document, field, field_value):
+        key = {"id": id}
+        server= await self.db.find_one(key)
+        document= server[document]
+        field = document[field]
+        field_value= field[field_value]
+        return field_value
+     
 
     @staticmethod
     def __ensure_dict(data):

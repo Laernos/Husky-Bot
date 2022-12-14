@@ -5,6 +5,8 @@ from discord import app_commands, Activity, ActivityType
 from itertools import cycle
 from pathlib import Path
 import motor.motor_asyncio
+import pymongo
+from pymongo import MongoClient
 
 #Local Code
 import settings
@@ -16,7 +18,6 @@ import emotes
 cwd = Path(__file__).parents[0]
 cwd = str(cwd)
 DEFAULTPREFIX = '!'
-
 
 
 logger= settings.logging.getLogger('bot')
@@ -52,8 +53,13 @@ def run():
         bot.mutes = Document(bot.db, 'mutes')
         bot.economy = Document(bot.db, 'economy')
         bot.server_config = Document(bot.db, 'Server Configs')
-
         currentMutes = await bot.mutes.get_all()
+
+        bot.cluster = MongoClient(settings.MONGO_TOKEN)
+        bot.db = bot.cluster['database']        
+        bot.test= bot.db.test
+        bot.invite= bot.db.invite
+
         for mute in currentMutes:
             bot.muted_users[mute["_id"]] = mute
 

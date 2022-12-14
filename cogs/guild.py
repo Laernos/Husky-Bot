@@ -22,8 +22,18 @@ class Guild(commands.Cog):
                     # send message to the inviter to say thank you
                     await bot_inviter.send(f"Thank you for inviting {self.bot.user.name}!")
                     break
+#creates a database for the server in Server Configs
 
-    
+        data= {
+            'name': integration.guild.name,            
+            "id": integration.guild.id,
+            }    
+            
+        db= await self.bot.server_config.find(integration.guild.id)
+        if db is None:
+            await self.bot.server_config.insert(data)            
+        return
+
 
 async def setup(bot):
     await bot.add_cog(Guild(bot))
