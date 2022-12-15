@@ -5,12 +5,10 @@ from discord import app_commands, Activity, ActivityType
 from itertools import cycle
 from pathlib import Path
 import motor.motor_asyncio
-import pymongo
-from pymongo import MongoClient
+
 
 #Local Code
 import settings
-import json_loader
 from mongo import Document
 import emotes
 

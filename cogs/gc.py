@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands 
 from discord import app_commands
 import platform #for stats
-import json_loader
 
 
 class GC(commands.Cog):
@@ -78,15 +77,6 @@ class GC(commands.Cog):
         embed.set_footer(text=f"Husky | {self.bot.user.name}")
         embed.set_author(name=self.bot.user.name, icon_url=self.bot.user.avatar.url)
         await ctx.reply(embed=embed)  
-
-    @commands.command()
-    @commands.has_guild_permissions(administrator = True)
-    @commands.cooldown(1,5)
-    async def prefi(self, ctx, *, pre="!"):
-        data=json_loader.read_json('prefixes')
-        data[str(ctx.message.guild.id)] = pre
-        json_loader.write_json(data,'prefixes')
-        await ctx.send(f'The guild prefix has been set to `{pre}`. Use `{pre}prefix <prefix>` to cahnge it again!')
 
 
 
