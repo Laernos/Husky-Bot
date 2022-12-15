@@ -9,7 +9,7 @@ class Test2(commands.Cog):
 
 
     @commands.command()
-    async def createserverdb(self, ctx):
+    async def db(self, ctx):
         data= {
             'name': ctx.message.guild.name,            
             "id": ctx.message.guild.id,
@@ -24,10 +24,12 @@ class Test2(commands.Cog):
             }}
 
 
-        roles = await self.bot.server_config.find(ctx.guild.id)
-        if roles is None:
-            await ctx.send('sorry there is no roles')
-        return
+        await self.bot.server_config.insert(data)
+
 
 async def setup(bot):
     await bot.add_cog(Test2(bot))
+
+
+
+    

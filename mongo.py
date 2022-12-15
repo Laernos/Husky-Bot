@@ -144,39 +144,30 @@ class Document:
         field_value= field[field_value]
         return field_value
 #----------------------------------------------------------------------------------------------------------------------------------------
-    async def update_document(self, id, document):
+    async def update_document(self, id, document,value):
         key = {"id": id}
-        server= await self.db.update_one(key)
-        document= server[document]
-        return document  
+        await self.db.update_one(key, {'$set':{document:value}})
 
-    async def update_field(self, id, document, field):
+    async def update_field_value(self, id, document, field, field_value, value):
         key = {"id": id}
-        server= await self.db.update_one(key)
-        document= server[document]
-        field = document[field]
-        return field 
+        await self.db.update_one(key, {'$set':{f'{document}.{field}.{field_value}': value}})        
 
-    async def update_field_value(self, id, document, field, field_value):
-        key = {"id": id}
-        server= await self.db.update_one(key)
-        document= server[document]
-        field = document[field]
-        field_value= field[field_value]
-        return field_value   
 #----------------------------------------------------------------------------------------------------------------------------------------
+    async def delete_db(self, id):
+        key = {"id": id}
+        await self.db.delete_one(key)
+   
+    
     async def delete_document(self, id, document):
         key = {"id": id}
-        server= await self.db.delete_one(key)
-        document= server[document]
-        return document  
+        await self.db.update_one(key, {'$unset':{document:''}})
 
-    async def update_field(self, id, document, field):
+
+    async def delete_field(self, id, document, field):
         key = {"id": id}
-        server= await self.db.delete_one(key)
-        document= server[document]
-        field = document[field]
-        return field 
+        await self.db.update_one(key, {'$unset':{f'{document}.{field}':''}})
+
+    
 
 
     @staticmethod

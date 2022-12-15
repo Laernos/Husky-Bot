@@ -29,7 +29,7 @@ async def get_prefix(bot, message):
     if not message.guild:
         return commands.when_mentioned_or("!")(bot, message)
     try:
-        data = await bot.config.find(message.guild.id)
+        data = await bot.server_config.find(message.guild.id)
     # Make sure we have a useable prefix
         if not data or "prefix" not in data:
             return commands.when_mentioned_or("!")(bot, message)
@@ -49,22 +49,16 @@ def run():
         bot.mongo= motor.motor_asyncio.AsyncIOMotorClient(str(settings.MONGO_TOKEN))
         bot.db= bot.mongo['database']
         bot.config = Document(bot.db, 'servers')
-        bot.invites = Document(bot.db, 'invites')
         bot.mutes = Document(bot.db, 'mutes')
-        bot.economy = Document(bot.db, 'economy')
         bot.server_config = Document(bot.db, 'Server Configs')
+        bot.user_data = Document(bot.db, 'User Data')
         currentMutes = await bot.mutes.get_all()
 
-        bot.cluster = MongoClient(settings.MONGO_TOKEN)
-        bot.db = bot.cluster['database']        
-        bot.test= bot.db.test
-        bot.invite= bot.db.invite
 
         for mute in currentMutes:
             bot.muted_users[mute["_id"]] = mute
 
-        change_status.start()
-        
+        change_status.start()       
         logger.info(f'User: {bot.user} (ID: {bot.user.id})') 
         for cog_file in settings.COGS_DIR.glob("*.py"):
             if cog_file.name != "__init__.py":
@@ -79,8 +73,8 @@ def run():
 
 
     @bot.command()
-    async def test(ctx, member:discord.Member):
-        await ctx.send(f'Working! {member.status}')
+    async def test(ctx,):
+        await ctx.send('Working!')
 
 
     @bot.hybrid_command()
