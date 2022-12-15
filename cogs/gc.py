@@ -71,7 +71,7 @@ class GC(commands.Cog):
         embed=discord.Embed(title= f'{self.bot.user.name} Stats', description="\uFEFF", color=ctx.author.colour, timestamp=ctx.message.created_at)
         embed.add_field(name='Python Version:', value= python_version)
         embed.add_field(name='Discord.Py Version:', value= dpy_version)
-        embed.add_field(name='Total Guides:', value=server_count)
+        embed.add_field(name='Total Guilds:', value=server_count)
         embed.add_field(name='Total Users:', value= member_count)
         embed.add_field(name='Bot Developer:', value='<@344034871230070784>')
         embed.set_footer(text=f"Husky | {self.bot.user.name}")

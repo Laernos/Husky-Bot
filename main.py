@@ -20,7 +20,7 @@ DEFAULTPREFIX = '!'
 
 logger= settings.logging.getLogger('bot')
 
-status= cycle(['Efeyi', 'Gotteeeeen', 'Sikiyorum'])
+
 
 async def get_prefix(bot, message):
     # If dm's
@@ -39,10 +39,13 @@ def run():
     intents= discord.Intents.all()
     bot = commands.Bot(command_prefix=get_prefix, owner_id = 344034871230070784,intents=intents)
 
+    status= cycle(['!help | huskybot.net', f'{len(bot.guilds)} servers'])
+
     bot.muted_users= {}
 
     @bot.event
     async def on_ready():
+
         
         bot.mongo= motor.motor_asyncio.AsyncIOMotorClient(str(settings.MONGO_TOKEN))
         bot.db= bot.mongo['database']
@@ -56,7 +59,7 @@ def run():
         for mute in currentMutes:
             bot.muted_users[mute["_id"]] = mute
 
-        change_status.start()       
+        change_status.start()     
         logger.info(f'User: {bot.user} (ID: {bot.user.id})') 
         for cog_file in settings.COGS_DIR.glob("*.py"):
             if cog_file.name != "__init__.py":
@@ -65,7 +68,7 @@ def run():
         bot.tree.copy_global_to(guild=settings.GUILDS_ID)
         await bot.tree.sync(guild=settings.GUILDS_ID)
 
-    @tasks.loop(seconds=3)
+    @tasks.loop(seconds=5)
     async def change_status():
         await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(next(status)))
 
