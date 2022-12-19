@@ -12,10 +12,8 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(ban_members=True)
     async def kick(self,ctx,member:discord.Member, *, reason = None):
         await ctx.guild.kick(user=member, reason= f'{ctx.author.name}:{reason}')
-
-        channel = self.bot.get_channel(1051654618188369931)
         embed= discord.Embed(title= f'{ctx.author.name} kicked: {member.name}', description=reason)
-        await channel.send(embed=embed)
+        await ctx.channel.send(embed=embed)
 
     @commands.command()
     @commands.guild_only()
@@ -28,7 +26,7 @@ class Mod(commands.Cog):
             title= f'{ctx.author.name} banned: {member.name}',
             description=reason)
         embed.set_thumbnail(url='https://imgur.com/pH00Lsc.png')
-        await channel.send(embed=embed)
+        await ctx.channel.send(embed=embed)
 
 
 
@@ -39,23 +37,26 @@ class Mod(commands.Cog):
     async def unban(self,ctx,member, *, reason = None):
         member= await self.bot.fetch_user(int(member))
         await ctx.guild.unban(member, reason= f'{ctx.author.name}:{reason}')
-
-        channel = self.bot.get_channel(1051654618188369931)
         embed= discord.Embed(title= f'{ctx.author.name} unbanned: {member.name}', description=reason)
         embed.set_thumbnail(url='https://imgur.com/FsaeNWM.png')
-        await channel.send(embed=embed)
+        await ctx.channel.send(embed=embed)
 
 
     @commands.command()
     @commands.guild_only()
     @commands.has_guild_permissions(manage_messages=True)
     async def purge(self,ctx,amount=15):
-        await ctx.channel.purge(limit= amount+1)
-
-        channel = self.bot.get_channel(1051654618188369931)
-        embed= discord.Embed(title= f'{ctx.author.name} purged: {ctx.channel.name}', description=f'{amount} messages were cleared')
-        await channel.send(embed=embed)
-
+        try:
+            if not ctx.author.bot: 
+                await self.bot.server_config.find_field(ctx.guild.id, 'commands', 'logging_cmnd')
+                if await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
+                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
+                    channel=self.bot.get_channel(int(b))        
+                    await ctx.channel.purge(limit= amount+1)
+                    embed= discord.Embed(title= f'{ctx.author.name} purged: {ctx.channel.name}', description=f'{amount} messages were cleared')
+                    await channel.send(embed=embed)
+        except KeyError:
+            return
 
     
 

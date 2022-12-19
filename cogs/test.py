@@ -5,6 +5,9 @@ from datetime import datetime
 #I'm not proud of myself with this code but it works u know.
 
 class Testa(commands.Cog):
+
+    current_streamers= list()
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -117,7 +120,7 @@ class Testa(commands.Cog):
                 await self.set_true(ctx,'server')
                 await self.set_channel(ctx,'server', channel.id)
                 await ctx.send(f'{module.name} is enabled')
-                await channel.send(f'Server Logging Has been set for this channel')
+                await channel.send(f'This channel has been set for Server Logging')
             elif module.value== 'member':
                 if channel is None:
                     b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'member', 'channel')
@@ -126,7 +129,7 @@ class Testa(commands.Cog):
                 await self.set_true(ctx,'member')
                 await self.set_channel(ctx,'member', channel.id)
                 await ctx.send(f'{module.name} is enabled')
-                await channel.send(f'Member Logging Has been set for this channel')
+                await channel.send(f'This channel has been set for Member Logging')
             elif module.value== 'moderation':
                 if channel is None:
                     b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
@@ -135,7 +138,7 @@ class Testa(commands.Cog):
                 await self.set_true(ctx,'moderation')
                 await self.set_channel(ctx,'moderation', channel.id)
                 await ctx.send(f'{module.name} is enabled')
-                await channel.send(f'Moderation Logging Has been set for this channel')
+                await channel.send(f'This channel has been set for Moderation Logging')
             elif module.value== 'message':
                 if channel is None:
                     b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
@@ -144,7 +147,7 @@ class Testa(commands.Cog):
                 await self.set_true(ctx,'message')
                 await self.set_channel(ctx,'message', channel.id)
                 await ctx.send(f'{module.name} is enabled')
-                await channel.send(f'Message Logging Has been set for this channel')
+                await channel.send(f'This channel has been set for Message Logging')
             elif module.value== 'voice':
                 if channel is None:
                     b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'voice', 'channel')
@@ -153,7 +156,7 @@ class Testa(commands.Cog):
                 await self.set_true(ctx,'voice')
                 await self.set_channel(ctx,'voice', channel.id)
                 await ctx.send(f'{module.name} is enabled')
-                await channel.send(f'Voice Logging Has been set for this channel')
+                await channel.send(f'This channel has been set for Voice Logging')
             elif module.value== 'invite':
                 if channel is None:
                     b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'invite', 'channel')
@@ -162,7 +165,7 @@ class Testa(commands.Cog):
                 await self.set_true(ctx,'invite')
                 await self.set_channel(ctx,'invite', channel.id)
                 await ctx.send(f'{module.name} is enabled')
-                await channel.send(f'Invite Logging Has been set for this channel')
+                await channel.send(f'This channel has been set for Invite Logging')
             elif module.value== 'activity':
                 if channel is None:
                     b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'activity', 'channel')
@@ -171,7 +174,7 @@ class Testa(commands.Cog):
                 await self.set_true(ctx,'activity')
                 await self.set_channel(ctx,'activity', channel.id)
                 await ctx.send(f'{module.name} is enabled')
-                await channel.send(f'Activity Logging Has been set for this channel')                                                                           
+                await channel.send(f'This channel has been set for Activity Logging')                                                                           
         elif status.value == 'disable':
             try:
                 await self.bot.server_config.find_field(ctx.guild.id, 'commands', 'logging_cmnd')
@@ -313,17 +316,18 @@ class Testa(commands.Cog):
     @commands.Cog.listener()    
     async def on_message_edit(self,before,after):
         try:
-            await self.bot.server_config.find_field(before.guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
-                channel=self.bot.get_channel(int(b))
-                embed= discord.Embed(
-                    title=f'Message edited in #{before.channel}',
-                    description= f'**Before:** {before.content}\n**After**:{after.content}', timestamp=datetime.now(),
-                    color=discord.Colour.red())
-                embed.set_footer(text=f'ID:{before.author.id}')
-                embed.set_author(name=before.author.name, icon_url= before.author.avatar)                     
-                await channel.send(embed=embed)
+            if not before.author.bot:
+                await self.bot.server_config.find_field(before.guild.id, 'commands', 'logging_cmnd')
+                if await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
+                    b=await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
+                    channel=self.bot.get_channel(int(b))
+                    embed= discord.Embed(
+                        title=f'Message edited in #{before.channel}',
+                        description= f'**Before:** {before.content}\n**After**:{after.content}', timestamp=datetime.now(),
+                        color=discord.Colour.red())
+                    embed.set_footer(text=f'ID:{before.author.id}')
+                    embed.set_author(name=before.author.name, icon_url= before.author.avatar)                     
+                    await channel.send(embed=embed)
         except KeyError:
             pass
 
@@ -439,26 +443,50 @@ class Testa(commands.Cog):
 
     @commands.Cog.listener()    
     async def on_voice_state_update(self,member,before,after):
+        desc=""
+        title=""
         try:
             await self.bot.server_config.find_field(member.guild.id, 'commands', 'logging_cmnd')
             if await self.bot.server_config.find_field_value_value(member.guild.id, 'commands', 'logging_cmnd', 'voice', 'status') is True:
                 b=await self.bot.server_config.find_field_value_value(member.guild.id, 'commands', 'logging_cmnd', 'voice', 'channel')
                 channel=self.bot.get_channel(int(b))
-                description= f'{member.name}{after.channel}'
-                if before.channel is None:
-                    title = 'Joined'
-                elif after.channel is None:
-                    title= 'Left'
-                    description= f'{member.name}{before.channel}'
-                else:
-                    title = 'Moved'
+                if member.bot:
+                    return
+                if not before.channel:
+                    title=f'Member Joined Voice Channel'
+                    desc= f'{member.name} joined {after.channel}'
+                if before.channel and not after.channel:
+                    title=f'Member Left Voice Channel'
+                    desc= f'{member.name} left {before.channel}'               
+                if before.channel and after.channel:
+                    if before.channel.id != after.channel.id:
+                        title= f'Member Switched Voice Channels'
+                        desc= f'{member.name} switched from {before.channel} to {after.channel}'
+                    else:
+                        if member.voice.self_stream:
+                            title = f'Member started streaming'
+                            self.current_streamers.append(member.id)
+                        elif member.voice.self_mute:
+                            title=f'Member Muted'
+                        elif member.voice.self_deaf:
+                            return
+                        else:
+                            for streamer in self.current_streamers:
+                                if member.id == streamer:
+                                    if not member.voice.self_stream:
+                                        title = f'Member Stopped Streaming'
+                                        self.current_streamers.remove(member.id)
+                                    break
+                            title=f'Member Unmuted'    
+
                 embed= discord.Embed(
-                    title=f'Member {title} Voice Channel',
-                    description= description, timestamp=datetime.now(),
-                    color=discord.Colour.red())
-                embed.set_footer(text=f'ID:{member.id}')
-                embed.set_author(name=member.name, icon_url= member.avatar)                     
+                    title=title,
+                    description= desc,
+                    timestamp= datetime.now(),
+                    color= discord.Colour.red())
+                embed.set_author(name=member.name, icon_url=member.avatar)  
                 await channel.send(embed=embed)
+
         except KeyError:
             pass
 
@@ -489,8 +517,8 @@ class Testa(commands.Cog):
                 b=await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
                 channell=self.bot.get_channel(int(b))
                 embed= discord.Embed(
-                    title=f'Member Unbanned',
-                    description= f'**Name:** {user.name}',
+                    title='<:unban:1054239050795585546>  __UNBAN__  <:unban:1054239050795585546>',
+                    description= f'<:prisoner:1054134753504268361> **USER:** {user.name}\n<:log:1054135131855671366> **REASON:**',
                     timestamp= datetime.now(),
                     color= discord.Colour.red())  
                 await channell.send(embed=embed)
@@ -503,8 +531,8 @@ class Testa(commands.Cog):
     async def on_presence_update(self,before,after):
         try:
             await self.bot.server_config.find_field(before.guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
+            if await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'activity', 'status') is True:
+                b=await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'activity', 'channel')
                 channel=self.bot.get_channel(int(b))
                 a=(str(before.activity).lower())
                 d=(str(after.activity).lower())
