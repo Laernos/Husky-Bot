@@ -1,37 +1,77 @@
 import discord
-from discord import File
 from discord.ext import commands
-from easy_pil import Editor, load_image_async, Font
+from discord import app_commands
 
 
 class Welcome(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_member_join(self,member):
-        channel = member.guild.system_channel
-        if channel is not None:
-            background= Editor('pic3.png')
-            profile_image = await load_image_async(str(member.avatar.url))
-            profile = Editor(profile_image).resize((200,200)).circle_image()
-            poppins = Font.poppins(size=50, variant='bold')
-            poppins_small= Font.poppins(size=20, variant='light')
-            background.paste(profile, (756,77))
-            background.text((450,140), f'{member.name}#{member.discriminator}', color='white', font=poppins, align='center')
-            file= File(fp=background.image_bytes, filename='pic1.jpg')
-            await channel.send(f'welcome to my server v2')
-            await channel.send(file=file)    
+    @commands.group(name= 'welcome')
+    async def welcome(self,ctx:commands.Context):
+        await ctx.send('You are missing subcommand!')    
+
+
+    @welcome.group(name= 'enable')
+    async def enable(self, ctx:commands.Context):
 
         try:
-            if self.bot.muted_users[member.id]:
-                role = discord.utils.get(member.guild.roles, name= 'Muted')
-                if role:
-                    await member.add_roles(role)
-                    print(f'Remuted {member.display_name} upon guild entry')
+            a=await self.bot.server_config.find_field_value(ctx.guild.id,'commands', 'welcome_cmnd', 'status')  
+            if a is True:
+                await ctx.send(f'welcome is already enabled!')
+            else:
+                await self.bot.server_config.update_field_value(ctx.guild.id, 'commands','welcome_cmnd', 'status', True)
+                await ctx.send('welcome is succesfully enabled!')                
         except KeyError:
-            pass
+                channel = ctx.guild.system_channel or ctx.message.channel
+                data ={'status':True,'channel':channel.id, 'message':''}
+                user_file= {f'commands.welcome_cmnd':data}
+                await self.bot.server_config.update_dc(ctx.guild.id, user_file)
+                await ctx.send('welcome module is succesfully enabled.')
+                if ctx.guild.system_channel is None:
+                    await ctx.send(f'The welcome message channel has been set to <#{ctx.message.channel.id}>. If you like to change the channel use `!test channel <channel.id>`') 
 
+
+    @welcome.group(name= 'disable')
+    async def disable(self,ctx: commands.Context):
+        try:
+            a=await self.bot.server_config.find_field_value(ctx.guild.id,'commands', 'welcome_cmnd','status')
+            if a is True:
+                await self.bot.server_config.update_field_value(ctx.guild.id, 'commands','welcome_cmnd', 'status', False)
+                await ctx.send('welcome is succesfully disabled')
+            else:
+                await ctx.send(f'welcome is already disabled')
+        except KeyError:
+            await ctx.send('welcome is already disabled!')
+
+
+
+    @welcome.group(name= 'message')
+    async def message(self,ctx: commands.Context, *,message:str):
+        try:
+            a=await self.bot.server_config.find_field_value(ctx.guild.id,'commands', 'welcome_cmnd','status')
+            if a is True:
+                await self.bot.server_config.update_field_value(ctx.guild.id,'commands', 'welcome_cmnd', 'message', message)
+                await ctx.send(f'Welcome message has been set to `{message}`')
+            else:
+                await ctx.send('Welcome is not enabled. Use `!welcome enable`')                      
+        except KeyError:
+            await ctx.send('Welcome is not enabled. Use `!welcome enable`')  
+
+    @welcome.group(name= 'channel')
+    async def channel(self,ctx: commands.Context, channel:str):
+        try:
+            a=await self.bot.server_config.find_field_value(ctx.guild.id,'commands', 'welcome_cmnd','status')
+            if a is True:
+                await self.bot.server_config.update_field_value(ctx.guild.id,'commands', 'welcome_cmnd', 'channel', channel)
+                await ctx.send(f'Welcome channel has been set to `{channel}`')
+            else:
+                await ctx.send('Welcome is not enabled. Use `!welcome enable`')                      
+        except KeyError:
+            await ctx.send('Welcome is not enabled. Use `!welcome enable`')  
+
+
+    
 
 async def setup(bot):
     await bot.add_cog(Welcome(bot))

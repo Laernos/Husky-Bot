@@ -24,8 +24,14 @@ class Mod(commands.Cog):
         await ctx.guild.ban(user=member, reason= f'{ctx.author.name}:{reason}')
 
         channel = self.bot.get_channel(1051654618188369931)
-        embed= discord.Embed(title= f'{ctx.author.name} banned: {member.name}', description=reason)
+        embed= discord.Embed(
+            title= f'{ctx.author.name} banned: {member.name}',
+            description=reason)
+        embed.set_thumbnail(url='https://imgur.com/pH00Lsc.png')
         await channel.send(embed=embed)
+
+
+
 
     @commands.command()
     @commands.guild_only()
@@ -36,6 +42,7 @@ class Mod(commands.Cog):
 
         channel = self.bot.get_channel(1051654618188369931)
         embed= discord.Embed(title= f'{ctx.author.name} unbanned: {member.name}', description=reason)
+        embed.set_thumbnail(url='https://imgur.com/FsaeNWM.png')
         await channel.send(embed=embed)
 
 

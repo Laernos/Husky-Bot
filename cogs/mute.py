@@ -65,12 +65,12 @@ class Mute(commands.Cog):
         await self.bot.wait_until_ready()
 
     @commands.command(
-        name='mute',
+        name='mutee',
         description="Mutes a given user for x time!",
         ussage='<user> [time]'
     )
     @commands.has_permissions(manage_roles=True)
-    async def mute(self, ctx, member: discord.Member, *, time: TimeConverter=None):
+    async def mutee(self, ctx, member: discord.Member, *, time: TimeConverter=None):
         role = discord.utils.get(ctx.guild.roles, name="Muted")
         if not role:
             await ctx.send("No muted role was found! Please create one called `Muted`")
@@ -125,12 +125,12 @@ class Mute(commands.Cog):
                 pass
 
     @commands.command(
-        name='unmute',
+        name='unmutee',
         description="Unmuted a member!",
         usage='<user>'
     )
     @commands.has_permissions(manage_roles=True)
-    async def unmute(self, ctx, member: discord.Member):
+    async def unmutee(self, ctx, member: discord.Member):
         role = discord.utils.get(ctx.guild.roles, name="Muted")
         if not role:
             await ctx.send("No muted role was found! Please create one called `Muted`")

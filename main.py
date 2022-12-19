@@ -5,7 +5,7 @@ from discord import app_commands, Activity, ActivityType
 from itertools import cycle
 from pathlib import Path
 import motor.motor_asyncio
-
+import os
 
 #Local Code
 import settings
@@ -15,8 +15,6 @@ import emotes
 
 cwd = Path(__file__).parents[0]
 cwd = str(cwd)
-DEFAULTPREFIX = '!'
-
 
 logger= settings.logging.getLogger('bot')
 
@@ -60,10 +58,13 @@ def run():
             bot.muted_users[mute["_id"]] = mute
 
         change_status.start()     
+
+
         logger.info(f'User: {bot.user} (ID: {bot.user.id})') 
         for cog_file in settings.COGS_DIR.glob("*.py"):
             if cog_file.name != "__init__.py":
-                await bot.load_extension(f"cogs.{cog_file.name[:-3]}")        
+                await bot.load_extension(f"cogs.{cog_file.name[:-3]}")    
+
 
         bot.tree.copy_global_to(guild=settings.GUILDS_ID)
         await bot.tree.sync(guild=settings.GUILDS_ID)
@@ -74,7 +75,7 @@ def run():
 
 
     @bot.command()
-    async def test(ctx,):
+    async def testt(ctx,):
         await ctx.send('Working!')
 
 

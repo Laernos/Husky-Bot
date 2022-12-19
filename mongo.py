@@ -48,7 +48,7 @@ class Document:
         if await self.find_by_id(data_id) is None:
             return
 
-        await self.db.delete_many({"_id": data_id})
+        await self.db.delete_many({"id": data_id})
 
     async def delete_by_custom(self, filter_dict):
         self.__ensure_dict(filter_dict)
@@ -71,12 +71,12 @@ class Document:
         self.__ensure_dict(data)
         self.__ensure_id(data)
 
-        if await self.find_by_id(data["_id"]) is None:
+        if await self.find_by_id(data["id"]) is None:
             return await self.insert(data)
 
-        data_id = data.pop("_id")
+        data_id = data.pop("id")
         await self.db.update_one(
-            {"_id": data_id}, {f"${option}": data}, *args, **kwargs
+            {"id": data_id}, {f"${option}": data}, *args, **kwargs
         )
 
     async def upsert_custom(
@@ -105,21 +105,21 @@ class Document:
         self.__ensure_dict(data)
         self.__ensure_id(data)
 
-        if await self.find_by_id(data["_id"]) is None:
+        if await self.find_by_id(data["id"]) is None:
             return
 
-        data_id = data.pop("_id")
-        await self.db.update_one({"_id": data_id}, {"$unset": data})
+        data_id = data.pop("id")
+        await self.db.update_one({"id": data_id}, {"$unset": data})
 
     async def increment(self, data_id, amount, field):
         if await self.find_by_id(data_id) is None:
             return
 
-        await self.db.update_one({"_id": data_id}, {"$inc": {field: amount}})
+        await self.db.update_one({"id": data_id}, {"$inc": {field: amount}})
 
     # <-- Private methods -->
     async def __get_raw(self, data_id):
-        return await self.db.find_one({"_id": data_id})
+        return await self.db.find_one({"id": data_id})
 #----------------------------------------------------------------------------------------------------------------------------------------
 #        MY OWN DEFS
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ class Document:
         key = {"id": id}
         server= await self.db.find_one(key)
         document= server[document]
-        return document     
+        return document    
 
     async def find_field(self, id, document, field):
         key = {"id": id}
@@ -143,14 +143,40 @@ class Document:
         field = document[field]
         field_value= field[field_value]
         return field_value
+
+    async def find_field_value_value(self, id, document, field, field_value, value):
+        key = {"id": id}
+        server= await self.db.find_one(key)
+        document= server[document]
+        field = document[field]
+        field_value= field[field_value]
+        value= field_value[value]
+        return value
+
 #----------------------------------------------------------------------------------------------------------------------------------------
+    async def update_dc(self, id, document):
+        key = {"id": id}
+        await self.db.update_one(key, {'$set':document})
+
     async def update_document(self, id, document,value):
         key = {"id": id}
         await self.db.update_one(key, {'$set':{document:value}})
 
+    async def update_field(self, id, document, field,value):
+        key = {"id": id}
+        await self.db.update_one(key, {'$set':{f'{document}.{field}': value}})  
+
     async def update_field_value(self, id, document, field, field_value, value):
         key = {"id": id}
-        await self.db.update_one(key, {'$set':{f'{document}.{field}.{field_value}': value}})        
+        await self.db.update_one(key, {'$set':{f'{document}.{field}.{field_value}': value}})
+    
+    async def update_field_value_value(self, id, document, field, field_value, value,value2):
+        key = {"id": id}
+        await self.db.update_one(key, {'$set':{f'{document}.{field}.{field_value}.{value}': value2}})    
+
+    async def push_field(self, id, document, field, value):
+        key = {'id': id}
+        await self.db.update_one(key, {'$push':{f'{document}.{field}': value}})   
 
 #----------------------------------------------------------------------------------------------------------------------------------------
     async def delete_db(self, id):
@@ -166,6 +192,10 @@ class Document:
     async def delete_field(self, id, document, field):
         key = {"id": id}
         await self.db.update_one(key, {'$unset':{f'{document}.{field}':''}})
+
+    async def delete_field_value(self, id, document, field,value):
+        key = {"id": id}
+        await self.db.update_one(key, {'$unset':{f'{document}.{field}.{value}':''}})
 
     
 

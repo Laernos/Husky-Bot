@@ -14,6 +14,7 @@ BASE_DIR = pathlib.Path(__file__).parent
 
  
 COGS_DIR = BASE_DIR / "cogs"
+
 GUILDS_ID = discord.Object(id=int(os.getenv("GUILD")))
 
 
