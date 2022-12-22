@@ -4,7 +4,7 @@ from discord import app_commands
 from datetime import datetime
 #I'm not proud of myself with this code but it works u know.
 
-class Testa(commands.Cog):
+class Logging(commands.Cog):
 
     current_streamers= list()
 
@@ -295,20 +295,22 @@ class Testa(commands.Cog):
     @commands.Cog.listener()
     async def on_message_delete(self,message):
         try:
-            if not message.author.bot: 
-                await self.bot.server_config.find_field(message.guild.id, 'commands', 'logging_cmnd')
-                if await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
-                    b=await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
-                    channel=self.bot.get_channel(int(b))
-                    embed= discord.Embed(
-                        title=f'Message deleted in #{message.channel}',
-                        description= message.content,
-                        color=discord.Colour.red(),
-                        timestamp=datetime.now()
-                        )
-                    embed.set_author(name=message.author.name, icon_url= message.author.avatar)
-                    embed.set_footer(text=f'ID:{message.author.id}')            
-                    await channel.send(embed=embed)         
+            async for entry in message.guild.audit_logs(limit=1, action=discord.AuditLogAction.message_delete):
+                if not message.author.bot: 
+                    if not entry.user.bot:
+                        await self.bot.server_config.find_field(message.guild.id, 'commands', 'logging_cmnd')
+                        if await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
+                            b=await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
+                            channel=self.bot.get_channel(int(b))
+                            embed= discord.Embed(
+                                title=f'Message deleted in #{message.channel} {entry.user.name}',
+                                description= message.content,
+                                color=discord.Colour.red(),
+                                timestamp=datetime.now()
+                                )
+                            embed.set_author(name=message.author.name, icon_url= message.author.avatar)
+                            embed.set_footer(text=f'ID:{message.author.id}')            
+                            await channel.send(embed=embed)         
         except KeyError:
             pass
 
@@ -494,39 +496,63 @@ class Testa(commands.Cog):
     @commands.Cog.listener()    
     async def on_member_ban(self,guild,user):
         try:
-            await self.bot.server_config.find_field(guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
-                channell=self.bot.get_channel(int(b))
-                embed= discord.Embed(
-                    title='<:ban:1054132708688809985>  __BAN__  <:ban:1054132708688809985>',
-                    description= f'<:prisoner:1054134753504268361> **USER:** {user.name}\n<:log:1054135131855671366> **REASON:**',
-                    timestamp= datetime.now(),
-                    color= discord.Colour.red()) 
-                embed.set_footer(text=f'🆔 {user.id}')
-                embed.set_author(name=user.name, icon_url= user.avatar)                      
-                await channell.send(embed=embed)
+            async for entry in guild.audit_logs(limit=1, action=discord.AuditLogAction.ban):
+                await self.bot.server_config.find_field(guild.id, 'commands', 'logging_cmnd')
+                if await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'status') is True:
+                    b=await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
+                    channell=self.bot.get_channel(int(b))
+                    reason= f'`{entry.reason}`'
+                    author= entry.user
+                    if entry.user.id == 1049143343084490862:
+                        rea= entry.reason.split(':')
+                        reason= rea[1]
+                        reason= f'`{reason[1:]}`'
+                        aut=rea[0].split('#')
+                        author= discord.utils.get(self.bot.get_all_members(), name= aut[0], discriminator=aut[1])
+                    if reason is None: reason = '<:no_data:1055471334542553139>'
+                    if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
+                    embed= discord.Embed(
+                        title='<:ban:1054132708688809985>  __BAN__  <:ban:1054132708688809985>',
+                        description= f'<:prisoner:1054134753504268361> **USER:** {user.mention}, {user.name}#{user.discriminator}\n<:log:1054135131855671366> **REASON:** {reason}',
+                        timestamp= datetime.now(),
+                        color= 0xf7445a) 
+                    embed.set_footer(text=f'🆔 {user.id}')
+                    embed.set_author(name=f'{author.name}#{author.discriminator}' , icon_url= author.avatar)
+                    embed.set_thumbnail(url=user.avatar)                      
+                    await channell.send(embed=embed)
         except KeyError:
             pass
 
     @commands.Cog.listener()    
     async def on_member_unban(self,guild,user):
         try:
-            await self.bot.server_config.find_field(guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
-                channell=self.bot.get_channel(int(b))
-                embed= discord.Embed(
-                    title='<:unban:1054239050795585546>  __UNBAN__  <:unban:1054239050795585546>',
-                    description= f'<:prisoner:1054134753504268361> **USER:** {user.name}\n<:log:1054135131855671366> **REASON:**',
-                    timestamp= datetime.now(),
-                    color= discord.Colour.red())  
-                await channell.send(embed=embed)
+            async for entry in guild.audit_logs(limit=1, action=discord.AuditLogAction.unban):
+                await self.bot.server_config.find_field(guild.id, 'commands', 'logging_cmnd')
+                if await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'status') is True:
+                    b=await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
+                    channell=self.bot.get_channel(int(b))
+                    reason= f'`{entry.reason}`'
+                    author= entry.user
+                    if entry.user.id == 1049143343084490862:
+                        rea= entry.reason.split(':')
+                        reason= rea[1]
+                        reason= f'`{reason[1:]}`'
+                        aut=rea[0].split('#')
+                        author= discord.utils.get(self.bot.get_all_members(), name= aut[0], discriminator=aut[1])
+                    if reason is None: reason = '<:no_data:1055471334542553139>'
+                    if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
+                    embed= discord.Embed(
+                        title='<:unban:1054239050795585546>  __UNBAN__  <:unban:1054239050795585546>',
+                        description= f'<:prisoner:1054134753504268361> **USER:** {user.mention}, {user.name}#{user.discriminator}\n<:log:1054135131855671366> **REASON:** {reason}',
+                        timestamp= datetime.now(),
+                        color= discord.Colour.dark_teal()) 
+                    embed.set_footer(text=f'🆔 {user.id}')
+                    embed.set_author(name=f'{author.name}#{author.discriminator}' , icon_url= author.avatar)
+                    embed.set_thumbnail(url=user.avatar)                      
+                    await channell.send(embed=embed)
         except KeyError:
-            pass          
+            pass  
 
-# TO DO
-#If user start playing when listening to spotify bot doesnt send message
     @commands.Cog.listener()    
     async def on_presence_update(self,before,after):
         try:
@@ -534,19 +560,17 @@ class Testa(commands.Cog):
             if await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'activity', 'status') is True:
                 b=await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'activity', 'channel')
                 channel=self.bot.get_channel(int(b))
-                a=(str(before.activity).lower())
-                d=(str(after.activity).lower())
-                if 'spotify' in a:
-                    return
-                elif 'spotify' in d:
-                    return   
-                else: 
-                    if (before.activity is None) or (before.activity==after.activity):
-                        await channel.send(f'{before.name} has started playing {after.activity.name}')   
-                    elif after.activity is None:
-                        await channel.send(f'{before.name} has stopped playing {before.activity.name}')
+                if not before.bot:
+                    if before.activity != after.activity:
+                            # Check if the member started or stopped playing a game
+                            if before.activity is None and after.activity is not None:
+                                if after.activity.type != discord.ActivityType.listening:
+                                    await channel.send(f'{after.name} started playing {after.activity.name}')
+                            elif before.activity is not None and after.activity is None:
+                                if before.activity.type != discord.ActivityType.listening:
+                                    await channel.send(f'{after.name} stopped playing {before.activity.name}')
         except KeyError:
             pass
 
 async def setup(bot):
-    await bot.add_cog(Testa(bot))
+    await bot.add_cog(Logging(bot))

@@ -1,7 +1,9 @@
 import discord
+from discord import File
 from discord.ext import commands
 from discord import app_commands
-
+from datetime import datetime
+from easy_pil import Editor, load_image_async, Font
 
 class Mod(commands.Cog):
     def __init__(self, bot):
@@ -9,9 +11,9 @@ class Mod(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @commands.has_guild_permissions(ban_members=True)
+    @commands.has_guild_permissions(kick_members=True)
     async def kick(self,ctx,member:discord.Member, *, reason = None):
-        await ctx.guild.kick(user=member, reason= f'{ctx.author.name}:{reason}')
+        #await ctx.guild.kick(user=member, reason= f'{ctx.author.name}:{reason}')
         embed= discord.Embed(title= f'{ctx.author.name} kicked: {member.name}', description=reason)
         await ctx.channel.send(embed=embed)
 
@@ -19,14 +21,21 @@ class Mod(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(ban_members=True)
     async def ban(self,ctx,member:discord.Member, *, reason = None):
-        await ctx.guild.ban(user=member, reason= f'{ctx.author.name}:{reason}')
 
-        channel = self.bot.get_channel(1051654618188369931)
-        embed= discord.Embed(
-            title= f'{ctx.author.name} banned: {member.name}',
-            description=reason)
-        embed.set_thumbnail(url='https://imgur.com/pH00Lsc.png')
-        await ctx.channel.send(embed=embed)
+        user_image= await load_image_async(str(member.avatar))
+        jail_image = await load_image_async(str('https://imgur.com/u3GEpDV.png'))
+        user= Editor(user_image).resize((70,70))
+        jail = Editor(jail_image).resize((70,70))
+        user.paste(jail, (0,0))
+        file= File(fp=user.image_bytes, filename='pic1.png')
+
+        await ctx.guild.ban(user=member, reason= f'{ctx.author.name}#{ctx.author.discriminator}: {reason}')
+        reason= f'`{reason}`'
+        if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
+        embed= discord.Embed(title= '', description=f'{member.mention} **has been banned by** {ctx.author.mention}\n**Reason:** {reason}')
+        embed.set_author(name= f'{ctx.channel.guild.name} Security 🛡️', icon_url=ctx.channel.guild.icon)
+        embed.set_thumbnail(url='attachment://pic1.png')        
+        await ctx.channel.send(file=file, embed=embed)
 
 
 
@@ -36,9 +45,12 @@ class Mod(commands.Cog):
     @commands.has_guild_permissions(ban_members=True)
     async def unban(self,ctx,member, *, reason = None):
         member= await self.bot.fetch_user(int(member))
-        await ctx.guild.unban(member, reason= f'{ctx.author.name}:{reason}')
-        embed= discord.Embed(title= f'{ctx.author.name} unbanned: {member.name}', description=reason)
-        embed.set_thumbnail(url='https://imgur.com/FsaeNWM.png')
+        await ctx.guild.unban(member, reason= f'{ctx.author.name}#{ctx.author.discriminator}: {reason}')
+        reason= f'`{reason}`'
+        if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
+        embed= discord.Embed(title= '', description=f'{member.mention} **\'s ban has been lifted by** {ctx.author.mention}\n**Reason:** {reason}')
+        embed.set_author(name= f'{ctx.channel.guild.name} Security 🛡️', icon_url=ctx.channel.guild.icon)        
+        embed.set_thumbnail(url='https://imgur.com/EhBcoNW.png')
         await ctx.channel.send(embed=embed)
 
 
