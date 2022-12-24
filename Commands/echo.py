@@ -9,7 +9,7 @@ class Echo(commands.Cog):
 
     @commands.command(
         name="echo",
-        description="A simple command that repeats the users input back to them.",
+        description="A simple command that repeats the users input back to them."
     )
     async def echo(self, ctx):
         await ctx.message.delete()

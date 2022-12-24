@@ -20,25 +20,27 @@ class Mod(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @commands.has_guild_permissions(ban_members=True)
-    async def ban(self,ctx,member:discord.Member, *, reason = None):
+    async def ban(self,ctx,members:commands.Greedy[discord.Member]=None, *, reason = None):
 
-        user_image= await load_image_async(str(member.avatar))
-        jail_image = await load_image_async(str('https://imgur.com/u3GEpDV.png'))
-        user= Editor(user_image).resize((70,70))
-        jail = Editor(jail_image).resize((70,70))
-        user.paste(jail, (0,0))
-        file= File(fp=user.image_bytes, filename='pic1.png')
+        for member in members: # members is a list that greedy has created
+            try:
+                user_image= await load_image_async(str(member.avatar))
+                jail_image = await load_image_async(str('https://imgur.com/u3GEpDV.png'))
+                user= Editor(user_image).resize((70,70))
+                jail = Editor(jail_image).resize((70,70))
+                user.paste(jail, (0,0))
+                file= File(fp=user.image_bytes, filename='pic1.png')
 
-        await ctx.guild.ban(user=member, reason= f'{ctx.author.name}#{ctx.author.discriminator}: {reason}')
-        reason= f'`{reason}`'
-        if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
-        embed= discord.Embed(title= '', description=f'{member.mention} **has been banned by** {ctx.author.mention}\n**Reason:** {reason}')
-        embed.set_author(name= f'{ctx.channel.guild.name} Security 🛡️', icon_url=ctx.channel.guild.icon)
-        embed.set_thumbnail(url='attachment://pic1.png')        
-        await ctx.channel.send(file=file, embed=embed)
-
-
-
+                await ctx.guild.ban(user=member, reason= f'{ctx.author.name}#{ctx.author.discriminator}: {reason}')
+                reason= f'`{reason}`'
+                if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
+                if reason[1:-1] == '<:no_data:1055471334542553139>': reason= '<:no_data:1055471334542553139>'
+                embed= discord.Embed(title= '', description=f'{member.mention} **has been banned by** {ctx.author.mention}\n**Reason:** {reason}')
+                embed.set_author(name= f'{ctx.channel.guild.name} Security 🛡️', icon_url=ctx.channel.guild.icon)
+                embed.set_thumbnail(url='attachment://pic1.png')        
+                await ctx.channel.send(file=file, embed=embed)
+            except discord.Forbidden:
+                await ctx.channel.send('forbidden error')   
 
     @commands.command()
     @commands.guild_only()

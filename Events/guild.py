@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord import app_commands
-
+from datetime import datetime
 
 class Guild(commands.Cog):
     def __init__(self, bot):
@@ -22,6 +22,15 @@ class Guild(commands.Cog):
                     await bot_inviter.send(f"Thank you for inviting {self.bot.user.name}!")
                     break
 
+#sends server info to support server
+        channel= self.bot.get_channel(1055959347362017450)
+        embed=discord.Embed(title=f'{self.bot.user.name} has joined a new server', description='', timestamp= datetime.now(),color= discord.Colour.dark_teal())
+        embed.add_field(name='Server', value=f'{guild.name}')
+        embed.add_field(name='Member #', value=len(guild.members))
+        embed.add_field(name='Owner', value=f'{guild.owner.mention}')
+        embed.set_thumbnail(url=guild.icon)
+        embed.set_footer(text=f'🆔 {guild.id}')
+        await channel.send(embed=embed)                    
 
 #creates a database for the server in Server Configs
         data= {
@@ -38,6 +47,17 @@ class Guild(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         await self.bot.server_config.delete_db(guild.id)
+
+
+#sends server info to support server
+        channel= self.bot.get_channel(1055959347362017450)
+        embed=discord.Embed(title=f'{self.bot.user.name} has left a server', description='',timestamp= datetime.now(),color= 0xf7445a)
+        embed.add_field(name='Server', value=f'{guild.name}')
+        embed.add_field(name='Member #', value=len(guild.members))
+        embed.add_field(name='Owner', value=f'{guild.owner.mention}')
+        embed.set_thumbnail(url=guild.icon)
+        embed.set_footer(text=f'🆔 {guild.id}')
+        await channel.send(embed=embed)   
 
 
 async def setup(bot):

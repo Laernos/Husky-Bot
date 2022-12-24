@@ -35,7 +35,7 @@ async def get_prefix(bot, message):
 
 def run():
     intents= discord.Intents.all()
-    bot = commands.Bot(command_prefix=get_prefix, owner_id = 344034871230070784,intents=intents)
+    bot = commands.Bot(command_prefix=get_prefix, owner_id = 344034871230070784,intents=intents,help_command=None)
 
     status= cycle(['!help | huskybot.net', f'{len(bot.guilds)} servers'])
 
@@ -61,9 +61,18 @@ def run():
 
 
         logger.info(f'User: {bot.user} (ID: {bot.user.id})') 
-        for cog_file in settings.COGS_DIR.glob("*.py"):
-            if cog_file.name != "__init__.py":
-                await bot.load_extension(f"cogs.{cog_file.name[:-3]}")    
+        for filename in os.listdir('AdminCommands'):
+            if filename.endswith('.py'):
+                await bot.load_extension(f'AdminCommands.{filename[:-3]}')
+        print("... Admin Commands Ready! [1/3]")
+        for filename in os.listdir('Commands'):
+            if filename.endswith('.py'):
+                await bot.load_extension(f'Commands.{filename[:-3]}')
+        print("... Commands Ready! [2/3]")
+        for filename in os.listdir('Events'):
+            if filename.endswith('.py'):
+                await bot.load_extension(f'Events.{filename[:-3]}')
+        print("... Events Ready! [3/3]")        
 
 
         bot.tree.copy_global_to(guild=settings.GUILDS_ID)

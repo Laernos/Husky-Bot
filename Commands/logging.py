@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from datetime import datetime
+import asyncio
 #I'm not proud of myself with this code but it works u know.
 
 class Logging(commands.Cog):
@@ -26,7 +27,7 @@ class Logging(commands.Cog):
         return a
 
 
-    @commands.hybrid_command(name='alper', description= 'enables or disables the logging modules')
+    @commands.hybrid_command(name='logging', description= 'enables or disables the logging modules')
     @commands.has_permissions(administrator = True)
     @app_commands.describe(status="statu iste aq ne bilm")
     @app_commands.choices(status=[
@@ -44,7 +45,7 @@ class Logging(commands.Cog):
         discord.app_commands.Choice(name='Activity Logging', value='activity')    
     ])
     @commands.cooldown(1,5)
-    async def alper(self, ctx:commands.context, status:discord.app_commands.Choice[str], module:discord.app_commands.Choice[str], channel: discord.abc.GuildChannel =None):
+    async def logging(self, ctx:commands.context, status:discord.app_commands.Choice[str], module:discord.app_commands.Choice[str], channel: discord.abc.GuildChannel =None):
         if status.value == 'enable':
             try:
                 await self.bot.server_config.find_field(ctx.guild.id, 'commands', 'logging_cmnd')
@@ -298,19 +299,20 @@ class Logging(commands.Cog):
             async for entry in message.guild.audit_logs(limit=1, action=discord.AuditLogAction.message_delete):
                 if not message.author.bot: 
                     if not entry.user.bot:
-                        await self.bot.server_config.find_field(message.guild.id, 'commands', 'logging_cmnd')
-                        if await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
-                            b=await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
-                            channel=self.bot.get_channel(int(b))
-                            embed= discord.Embed(
-                                title=f'Message deleted in #{message.channel} {entry.user.name}',
-                                description= message.content,
-                                color=discord.Colour.red(),
-                                timestamp=datetime.now()
-                                )
-                            embed.set_author(name=message.author.name, icon_url= message.author.avatar)
-                            embed.set_footer(text=f'ID:{message.author.id}')            
-                            await channel.send(embed=embed)         
+                        if message.type != discord.MessageType.new_member:
+                            await self.bot.server_config.find_field(message.guild.id, 'commands', 'logging_cmnd')
+                            if await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
+                                b=await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
+                                channel=self.bot.get_channel(int(b))
+                                embed= discord.Embed(
+                                    title=f'Message deleted in #{message.channel} {entry.user.name}',
+                                    description= message.content,
+                                    color=discord.Colour.red(),
+                                    timestamp=datetime.now()
+                                    )
+                                embed.set_author(name=message.author.name, icon_url= message.author.avatar)
+                                embed.set_footer(text=f'ID:{message.author.id}')            
+                                await channel.send(embed=embed)         
         except KeyError:
             pass
 
@@ -440,7 +442,7 @@ class Logging(commands.Cog):
                     timestamp= datetime.now(),
                     color= discord.Colour.red())  
                 await channell.send(embed=embed)
-        except KeyError:
+        except:
             pass                                
 
     @commands.Cog.listener()    
@@ -495,6 +497,7 @@ class Logging(commands.Cog):
 
     @commands.Cog.listener()    
     async def on_member_ban(self,guild,user):
+        await asyncio.sleep(1) #waits so bot doesnt pull the previus ban reason
         try:
             async for entry in guild.audit_logs(limit=1, action=discord.AuditLogAction.ban):
                 await self.bot.server_config.find_field(guild.id, 'commands', 'logging_cmnd')
