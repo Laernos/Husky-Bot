@@ -64,15 +64,15 @@ def run():
         for filename in os.listdir('AdminCommands'):
             if filename.endswith('.py'):
                 await bot.load_extension(f'AdminCommands.{filename[:-3]}')
-        print("... Admin Commands Ready! [1/3]")
+        logger.info("Admin Commands Ready! [1/3]")
         for filename in os.listdir('Commands'):
             if filename.endswith('.py'):
                 await bot.load_extension(f'Commands.{filename[:-3]}')
-        print("... Commands Ready! [2/3]")
+        logger.info("Commands Ready! [2/3]")
         for filename in os.listdir('Events'):
             if filename.endswith('.py'):
                 await bot.load_extension(f'Events.{filename[:-3]}')
-        print("... Events Ready! [3/3]")        
+        logger.info("Events Ready! [3/3]")        
 
 
         bot.tree.copy_global_to(guild=settings.GUILDS_ID)

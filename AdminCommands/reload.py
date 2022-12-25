@@ -41,7 +41,43 @@ class Reload(commands.Cog):
                                 inline=False
                             )
                         await asyncio.sleep(0.5)
-                await ctx.send(embed=embed)
+                
+                for ext in os.listdir("./AdminCommands/"):
+                    if ext.endswith(".py") and not ext.startswith("_"):
+                        try:
+                            await self.bot.unload_extension(f"AdminCommands.{ext[:-3]}")
+                            await self.bot.load_extension(f"AdminCommands.{ext[:-3]}")
+                            embed.add_field(
+                                name=f"Reloaded: `{ext}`",
+                                value='\uFEFF',
+                                inline=False
+                            )
+                        except Exception as e:
+                            embed.add_field(
+                                name=f"Failed to reload: `{ext}`",
+                                value=e,
+                                inline=False
+                            )
+                        await asyncio.sleep(0.5)
+
+                for ext in os.listdir("./Events/"):
+                    if ext.endswith(".py") and not ext.startswith("_"):
+                        try:
+                            await self.bot.unload_extension(f"Events.{ext[:-3]}")
+                            await self.bot.load_extension(f"Events.{ext[:-3]}")
+                            embed.add_field(
+                                name=f"Reloaded: `{ext}`",
+                                value='\uFEFF',
+                                inline=False
+                            )
+                        except Exception as e:
+                            embed.add_field(
+                                name=f"Failed to reload: `{ext}`",
+                                value=e,
+                                inline=False
+                            )
+                        await asyncio.sleep(0.5)
+                await ctx.send(embed=embed)   
         else:
             # reload the specific cog
             async with ctx.typing():
@@ -51,7 +87,7 @@ class Reload(commands.Cog):
                     timestamp=ctx.message.created_at
                 )
                 ext = f"{cog.lower()}.py"
-                if not os.path.exists(f"./Commands/{ext}"):
+                if not (os.path.exists(f"./Commands/{ext}") or os.path.exists(f"./AdminCommands/{ext}") or os.path.exists(f"./Events/{ext}") ):
                     # if the file does not exist
                     embed.add_field(
                         name=f"Failed to reload: `{ext}`",
@@ -61,8 +97,15 @@ class Reload(commands.Cog):
 
                 elif ext.endswith(".py") and not ext.startswith("_"):
                     try:
-                        await self.bot.unload_extension(f"Commands.{ext[:-3]}")
-                        await self.bot.load_extension(f"Commands.{ext[:-3]}")
+                        if os.path.exists(f"./Commands/{ext}"):
+                            await self.bot.unload_extension(f"Commands.{ext[:-3]}")
+                            await self.bot.load_extension(f"Commands.{ext[:-3]}")
+                        elif os.path.exists(f"./AdminCommands/{ext}"):     
+                            await self.bot.unload_extension(f"AdminCommands.{ext[:-3]}")
+                            await self.bot.load_extension(f"AdminCommands.{ext[:-3]}")
+                        elif os.path.exists(f"./Events/{ext}"):     
+                            await self.bot.unload_extension(f"Events.{ext[:-3]}")
+                            await self.bot.load_extension(f"Events.{ext[:-3]}")                                                     
                         embed.add_field(
                             name=f"Reloaded: `{ext}`",
                             value='\uFEFF',

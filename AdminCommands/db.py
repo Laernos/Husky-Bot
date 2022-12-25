@@ -18,7 +18,7 @@ class Db(commands.Cog):
             }    
         await self.bot.server_config.delete(ctx.guild.id)
         await self.bot.server_config.insert(data)
-        await ctx.reply('> Database has been reset!')
+        await ctx.reply('> DDatabase has been reset!')
         
 
 

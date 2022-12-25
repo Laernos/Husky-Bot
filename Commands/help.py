@@ -5,6 +5,7 @@ from datetime import datetime
 import platform
 import psutil
 from dateutil.relativedelta import relativedelta
+import emotes as e
 
 class Bug(discord.ui.Modal, title='Bug Report'):
     
@@ -80,7 +81,7 @@ class Select(discord.ui.Select):
             dpy_version= discord.__version__
             server_count= len(interaction.client.guilds)
             member_count= len(interaction.guild.members)
-            embed=discord.Embed(title= f'{interaction.client.user.name} Bot Statistics', description="", color=interaction.user.colour, timestamp=interaction.message.created_at)
+            embed=discord.Embed(title= f'{interaction.client.user.name} Bot Statistics', description="<a:topleft:1056608662753390592><a:topright:1056608746542997504>\n<a:buttomleft:1056608839182594048><a:buttomright:1056608932107403364>", color=interaction.user.colour, timestamp=interaction.message.created_at)
             embed.add_field(name='Python V.', value= f'```{python_version}```')
             embed.add_field(name='Discord.py V.', value= f'```{dpy_version}```')
             embed.add_field(name='CPU Usage', value=f'```{psutil.cpu_percent()}%```')
@@ -91,7 +92,27 @@ class Select(discord.ui.Select):
             
             embed.set_footer(text=f"Husky | {interaction.client.user.name}")
             embed.set_author(name=interaction.client.user.name, icon_url=interaction.client.user.avatar.url)
-            await interaction.response.edit_message(embed=embed, view=None)    
+            await interaction.response.edit_message(embed=embed, view=None)
+        elif self.values[0] == 'Server Config': 
+            status= f'ㅤ{e.false_png_top}\nㅤ{e.false_png_buttom}'
+            try:
+                a=await interaction.client.server_config.find_field_value(interaction.guild_id,'commands', 'welcome_cmnd', 'status')  
+                if a is True:
+                    status= f'ㅤ{e.true_png_top}\nㅤ{e.true_png_buttom}'
+            except:
+                pass  
+
+
+            embed=discord.Embed(title=f'Module Configs for {interaction.guild.name} ', description='You can enabled or disable modules for your server.')
+            embed.add_field(name='WELCOME', value= f'```Sends a welcome message to\nthe welcome channel```', inline=True)
+            embed.add_field(name='ㅤ', value=status, inline=True)            
+            embed.add_field(name='ㅤ', value='ㅤ', inline=True)
+            embed.add_field(name='LOGGING', value= f'```Logs everythin happening in the server.```', inline=True)
+            embed.add_field(name='ㅤ', value='ㅤ<a:topleft:1056608662753390592><a:topright:1056608746542997504>\nㅤ<a:buttomleft:1056608839182594048><a:buttomright:1056608932107403364>', inline=True)                   
+            embed.add_field(name='ㅤ', value='ㅤ', inline=True)            
+            
+            
+            await interaction.response.edit_message(embed=embed, view=None)
         else:      
             await interaction.response.send_message(content=f"Your choice is {self.values[0]}!",ephemeral=True)
         
