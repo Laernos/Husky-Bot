@@ -19,13 +19,39 @@ class SelectView(discord.ui.View):
         super().__init__(timeout=timeout)
         self.add_item(Select())
 
+
+class Annen(discord.ui.View):
+    @discord.ui.select(options=[
+            discord.SelectOption(label="asd",emoji="👌",description="This is option 1!"),
+            discord.SelectOption(label="Option 2",emoji="✨",description="This is option 2!"),
+            discord.SelectOption(label="Option 3",emoji="🎭",description="This is option 3!")
+            ])
+    
+
+    async def select_callback(self, interaction:discord.interactions, select:discord.ui.Select):
+        if select.values[0] == 'asd':
+            await interaction.response.send_message('anneni gotten')
+        elif select.values[0] == 'Option 2':
+            await interaction.response.send_message('basdasd') 
+        elif select.values[0] == 'Option 3':
+            await interaction.response.send_message('anneni gotten')               
+
+    @discord.ui.button(label='Disable', style=discord.ButtonStyle.green)
+    async def disable_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        await interaction.response.send_message(f'yarrak')
+
+
+
+
+
+
 class Selection(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command()
     async def menu(self,ctx):
-        await ctx.send("Menus!",view=SelectView()) 
+        await ctx.send("Menus!",view=Annen( )) 
 
         
 
