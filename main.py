@@ -1,11 +1,12 @@
 #Third Party Libraries
 import discord
 from discord.ext import commands, tasks
-from discord import app_commands, Activity, ActivityType
+from discord import app_commands, Activity, ActivityType, ui
 from itertools import cycle
 from pathlib import Path
 import motor.motor_asyncio
 import os
+from datetime import datetime
 
 #Local Code
 import settings
@@ -78,6 +79,7 @@ def run():
         bot.tree.copy_global_to(guild=settings.GUILDS_ID)
         await bot.tree.sync(guild=settings.GUILDS_ID)
 
+
     @tasks.loop(seconds=5)
     async def change_status():
         await bot.change_presence(status=discord.Status.do_not_disturb, activity=discord.Game(next(status)))
@@ -99,27 +101,8 @@ def run():
     @bot.tree.context_menu(name="Show join date")
     async def get_joined_date(interaction: discord.Interaction, member: discord.Member):
         await interaction.response.send_message(f"Member joined: {discord.utils.format_dt(member.joined_at)} ", ephemeral=True)
-  
-    @bot.tree.context_menu(name="Report Message")
-    async def report_message(interaction: discord.Interaction, message: discord.Message):
-        await interaction.response.send_message(f"Message reported ", ephemeral=True)
 
-    @bot.tree.context_menu(name="asd")
-    async def asd(interaction: discord.Interaction, member: discord.Member):
-        await interaction.response.send_message(f"Member joined: {interaction.user.status} {member.status} ", ephemeral=True)   
-
-    @bot.tree.context_menu(name="Web Status")
-    async def web_status(interaction: discord.Interaction, member: discord.Member):
-        mobstatus= member.is_on_mobile()
-        webstatus= member.web_status
-        state= member.status        
-        await interaction.response.send_message(f" Status: {state}\n Web Status: {webstatus}\n Mobil Status: {mobstatus}\n Desktop Status: {member.desktop_status}\n user: {member} ", ephemeral=True)
-
-
-
-
-
-
+ 
 
     bot.run(settings.DISCORD_API_SECRET, root_logger=True)
 

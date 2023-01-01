@@ -14,16 +14,16 @@ class Logging(commands.Cog):
 
 
     async def set_true(self,ctx:commands.context,log):
-        await self.bot.server_config.update_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd',log, 'status',True)
+        await self.bot.server_config.update_field_value_value(ctx.guild.id, 'modules', 'logging',log, 'status',True)
 
     async def set_false(self,ctx:commands.context,log):
-        await self.bot.server_config.update_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd',log, 'status',False)
+        await self.bot.server_config.update_field_value_value(ctx.guild.id, 'modules', 'logging',log, 'status',False)
 
     async def set_channel(self,ctx:commands.context,log, channel):
-        await self.bot.server_config.update_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd',log, 'channel',channel)
+        await self.bot.server_config.update_field_value_value(ctx.guild.id, 'modules', 'logging',log, 'channel',channel)
 
     async def check_true(self,ctx:commands.context,log,):
-        a=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd',log, 'status')
+        a=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging',log, 'status')
         return a
 
 
@@ -48,7 +48,7 @@ class Logging(commands.Cog):
     async def logging(self, ctx:commands.context, status:discord.app_commands.Choice[str], module:discord.app_commands.Choice[str], channel: discord.abc.GuildChannel =None):
         if status.value == 'enable':
             try:
-                await self.bot.server_config.find_field(ctx.guild.id, 'commands', 'logging_cmnd')
+                await self.bot.server_config.find_field(ctx.guild.id, 'modules', 'logging')
             except KeyError:
                 data ={
                 'server':{'status':"",'channel':""},
@@ -59,40 +59,40 @@ class Logging(commands.Cog):
                 'invite':{'status':"",'channel':""},
                 'activity':{'status':"",'channel':""}                    
                 }
-                user_file= {f'commands.logging_cmnd':data}
+                user_file= {f'modules.logging':data}
                 await self.bot.server_config.update_dc(ctx.guild.id, user_file)              
             if module.value == 'all':
-                a=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'server', 'channel')
+                a=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'server', 'channel')
                 if channel is None:
                     if a!='': server_channel= self.bot.get_channel(int(a))
                     else: server_channel=ctx.message.channel
                 else: server_channel= channel
-                b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'member', 'channel')
+                b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'member', 'channel')
                 if channel is None:
                     if b!='': member_channel= self.bot.get_channel(int(b))
                     else: member_channel=ctx.message.channel
                 else: member_channel= channel
-                c=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
+                c=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'moderation', 'channel')
                 if channel is None:
                     if c!='': moderation_channel= self.bot.get_channel(int(c))
                     else: moderation_channel=ctx.message.channel
                 else: moderation_channel= channel
-                d=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
+                d=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'message', 'channel')
                 if channel is None:
                     if d!='': message_channel= self.bot.get_channel(int(d))
                     else: message_channel=ctx.message.channel
                 else: message_channel= channel
-                e=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'voice', 'channel')
+                e=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'voice', 'channel')
                 if channel is None:
                     if e!='': voice_channel= self.bot.get_channel(int(e))
                     else: voice_channel=ctx.message.channel
                 else: voice_channel= channel
-                f=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'invite', 'channel')
+                f=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'invite', 'channel')
                 if channel is None:
                     if f!='': invite_channel= self.bot.get_channel(int(f))
                     else: invite_channel=ctx.message.channel
                 else: invite_channel= channel
-                g=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'activity', 'channel')
+                g=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'activity', 'channel')
                 if channel is None:
                     if g!='': activity_channel= self.bot.get_channel(int(g))
                     else: activity_channel=ctx.message.channel
@@ -115,7 +115,7 @@ class Logging(commands.Cog):
                 await ctx.send(f'all modules are enabled\n**Channels:\nServer Logging:**{server_channel.mention}\n**Member Logging:** {member_channel.mention}\n**Moderation Logging:** {moderation_channel.mention}\n**Message Logging:** {message_channel.mention}\n**Voice Logging:** {voice_channel.mention}\n**Invite Logging:** {invite_channel.mention}\n**Activity Logging:** {activity_channel.mention}\n use`/logging Set Channel` slash command to change channel`')
             elif module.value== 'server':
                 if channel is None:
-                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'server', 'channel')
+                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'server', 'channel')
                     if b != '': channel= self.bot.get_channel(int(b))
                     else: channel=ctx.message.channel                  
                 await self.set_true(ctx,'server')
@@ -124,7 +124,7 @@ class Logging(commands.Cog):
                 await channel.send(f'This channel has been set for Server Logging')
             elif module.value== 'member':
                 if channel is None:
-                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'member', 'channel')
+                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'member', 'channel')
                     if b != '': channel= self.bot.get_channel(int(b))
                     else: channel=ctx.message.channel                  
                 await self.set_true(ctx,'member')
@@ -133,7 +133,7 @@ class Logging(commands.Cog):
                 await channel.send(f'This channel has been set for Member Logging')
             elif module.value== 'moderation':
                 if channel is None:
-                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
+                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'moderation', 'channel')
                     if b != '': channel= self.bot.get_channel(int(b))
                     else: channel=ctx.message.channel                  
                 await self.set_true(ctx,'moderation')
@@ -142,7 +142,7 @@ class Logging(commands.Cog):
                 await channel.send(f'This channel has been set for Moderation Logging')
             elif module.value== 'message':
                 if channel is None:
-                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
+                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'message', 'channel')
                     if b != '': channel= self.bot.get_channel(int(b))
                     else: channel=ctx.message.channel      
                 await self.set_true(ctx,'message')
@@ -151,7 +151,7 @@ class Logging(commands.Cog):
                 await channel.send(f'This channel has been set for Message Logging')
             elif module.value== 'voice':
                 if channel is None:
-                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'voice', 'channel')
+                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'voice', 'channel')
                     if b != '': channel= self.bot.get_channel(int(b))
                     else: channel=ctx.message.channel                  
                 await self.set_true(ctx,'voice')
@@ -160,7 +160,7 @@ class Logging(commands.Cog):
                 await channel.send(f'This channel has been set for Voice Logging')
             elif module.value== 'invite':
                 if channel is None:
-                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'invite', 'channel')
+                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'invite', 'channel')
                     if b != '': channel= self.bot.get_channel(int(b))
                     else: channel=ctx.message.channel                  
                 await self.set_true(ctx,'invite')
@@ -169,7 +169,7 @@ class Logging(commands.Cog):
                 await channel.send(f'This channel has been set for Invite Logging')
             elif module.value== 'activity':
                 if channel is None:
-                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'commands', 'logging_cmnd', 'activity', 'channel')
+                    b=await self.bot.server_config.find_field_value_value(ctx.guild.id, 'modules', 'logging', 'activity', 'channel')
                     if b != '': channel= self.bot.get_channel(int(b))
                     else: channel=ctx.message.channel                  
                 await self.set_true(ctx,'activity')
@@ -178,7 +178,7 @@ class Logging(commands.Cog):
                 await channel.send(f'This channel has been set for Activity Logging')                                                                           
         elif status.value == 'disable':
             try:
-                await self.bot.server_config.find_field(ctx.guild.id, 'commands', 'logging_cmnd')
+                await self.bot.server_config.find_field(ctx.guild.id, 'modules', 'logging')
                 if module.value == 'all':
                     await self.set_false(ctx,'server')
                     await self.set_false(ctx,'member')
@@ -214,7 +214,7 @@ class Logging(commands.Cog):
         else:
             if channel is not None :
                 try:
-                    await self.bot.server_config.find_field(ctx.guild.id, 'commands', 'logging_cmnd')
+                    await self.bot.server_config.find_field(ctx.guild.id, 'modules', 'logging')
                     if module.value == 'all':
                         a=await self.check_true(ctx,'server')
                         b=await self.check_true(ctx,'member')
@@ -300,9 +300,9 @@ class Logging(commands.Cog):
                 if not message.author.bot: 
                     if not entry.user.bot:
                         if message.type != discord.MessageType.new_member:
-                            await self.bot.server_config.find_field(message.guild.id, 'commands', 'logging_cmnd')
-                            if await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
-                                b=await self.bot.server_config.find_field_value_value(message.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
+                            await self.bot.server_config.find_field(message.guild.id, 'modules', 'logging')
+                            if await self.bot.server_config.find_field_value_value(message.guild.id, 'modules', 'logging', 'message', 'status') is True:
+                                b=await self.bot.server_config.find_field_value_value(message.guild.id, 'modules', 'logging', 'message', 'channel')
                                 channel=self.bot.get_channel(int(b))
                                 embed= discord.Embed(
                                     title=f'Message deleted in #{message.channel} {entry.user.name}',
@@ -321,9 +321,9 @@ class Logging(commands.Cog):
     async def on_message_edit(self,before,after):
         try:
             if not before.author.bot:
-                await self.bot.server_config.find_field(before.guild.id, 'commands', 'logging_cmnd')
-                if await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'message', 'status') is True:
-                    b=await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'message', 'channel')
+                await self.bot.server_config.find_field(before.guild.id, 'modules', 'logging')
+                if await self.bot.server_config.find_field_value_value(before.guild.id, 'modules', 'logging', 'message', 'status') is True:
+                    b=await self.bot.server_config.find_field_value_value(before.guild.id, 'modules', 'logging', 'message', 'channel')
                     channel=self.bot.get_channel(int(b))
                     embed= discord.Embed(
                         title=f'Message edited in #{before.channel}',
@@ -339,9 +339,9 @@ class Logging(commands.Cog):
     @commands.Cog.listener()    
     async def on_member_update(self,before,after):
         try:
-            await self.bot.server_config.find_field(before.guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'member', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'member', 'channel')
+            await self.bot.server_config.find_field(before.guild.id, 'modules', 'logging')
+            if await self.bot.server_config.find_field_value_value(before.guild.id, 'modules', 'logging', 'member', 'status') is True:
+                b=await self.bot.server_config.find_field_value_value(before.guild.id, 'modules', 'logging', 'member', 'channel')
                 channel=self.bot.get_channel(int(b))            
                 if len(before.roles) > len(after.roles):
                     role = next(role for role in before.roles if role not in after.roles)
@@ -384,9 +384,9 @@ class Logging(commands.Cog):
     @commands.Cog.listener()    
     async def on_guild_channel_create(self,channel):
         try:
-            await self.bot.server_config.find_field(channel.guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(channel.guild.id, 'commands', 'logging_cmnd', 'server', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(channel.guild.id, 'commands', 'logging_cmnd', 'server', 'channel')
+            await self.bot.server_config.find_field(channel.guild.id, 'modules', 'logging')
+            if await self.bot.server_config.find_field_value_value(channel.guild.id, 'modules', 'logging', 'server', 'status') is True:
+                b=await self.bot.server_config.find_field_value_value(channel.guild.id, 'modules', 'logging', 'server', 'channel')
                 channell=self.bot.get_channel(int(b))         
                 embed= discord.Embed(
                     title=f'Channel created',
@@ -400,9 +400,9 @@ class Logging(commands.Cog):
     @commands.Cog.listener()    
     async def on_guild_channel_delete(self,channel):
         try:
-            await self.bot.server_config.find_field(channel.guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(channel.guild.id, 'commands', 'logging_cmnd', 'server', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(channel.guild.id, 'commands', 'logging_cmnd', 'server', 'channel')
+            await self.bot.server_config.find_field(channel.guild.id, 'modules', 'logging')
+            if await self.bot.server_config.find_field_value_value(channel.guild.id, 'modules', 'logging', 'server', 'status') is True:
+                b=await self.bot.server_config.find_field_value_value(channel.guild.id, 'modules', 'logging', 'server', 'channel')
                 channell=self.bot.get_channel(int(b))
                 embed= discord.Embed(
                     title=f'Channel deleted',
@@ -416,9 +416,9 @@ class Logging(commands.Cog):
     @commands.Cog.listener()    
     async def on_guild_role_create(self,role):
         try:
-            await self.bot.server_config.find_field(role.guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(role.guild.id, 'commands', 'logging_cmnd', 'server', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(role.guild.id, 'commands', 'logging_cmnd', 'server', 'channel')
+            await self.bot.server_config.find_field(role.guild.id, 'modules', 'logging')
+            if await self.bot.server_config.find_field_value_value(role.guild.id, 'modules', 'logging', 'server', 'status') is True:
+                b=await self.bot.server_config.find_field_value_value(role.guild.id, 'modules', 'logging', 'server', 'channel')
                 channell=self.bot.get_channel(int(b))
                 embed= discord.Embed(
                     title=f'New Role Created',
@@ -432,9 +432,9 @@ class Logging(commands.Cog):
     @commands.Cog.listener()    
     async def on_guild_role_delete(self,role):
         try:
-            await self.bot.server_config.find_field(role.guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(role.guild.id, 'commands', 'logging_cmnd', 'server', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(role.guild.id, 'commands', 'logging_cmnd', 'server', 'channel')
+            await self.bot.server_config.find_field(role.guild.id, 'modules', 'logging')
+            if await self.bot.server_config.find_field_value_value(role.guild.id, 'modules', 'logging', 'server', 'status') is True:
+                b=await self.bot.server_config.find_field_value_value(role.guild.id, 'modules', 'logging', 'server', 'channel')
                 channell=self.bot.get_channel(int(b))
                 embed= discord.Embed(
                     title=f'A Role Deleted',
@@ -450,9 +450,9 @@ class Logging(commands.Cog):
         desc=""
         title=""
         try:
-            await self.bot.server_config.find_field(member.guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(member.guild.id, 'commands', 'logging_cmnd', 'voice', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(member.guild.id, 'commands', 'logging_cmnd', 'voice', 'channel')
+            await self.bot.server_config.find_field(member.guild.id, 'modules', 'logging')
+            if await self.bot.server_config.find_field_value_value(member.guild.id, 'modules', 'logging', 'voice', 'status') is True:
+                b=await self.bot.server_config.find_field_value_value(member.guild.id, 'modules', 'logging', 'voice', 'channel')
                 channel=self.bot.get_channel(int(b))
                 if member.bot:
                     return
@@ -500,9 +500,9 @@ class Logging(commands.Cog):
         await asyncio.sleep(1) #waits so bot doesnt pull the previus ban reason
         try:
             async for entry in guild.audit_logs(limit=1, action=discord.AuditLogAction.ban):
-                await self.bot.server_config.find_field(guild.id, 'commands', 'logging_cmnd')
-                if await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'status') is True:
-                    b=await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
+                await self.bot.server_config.find_field(guild.id, 'modules', 'logging')
+                if await self.bot.server_config.find_field_value_value(guild.id, 'modules', 'logging', 'moderation', 'status') is True:
+                    b=await self.bot.server_config.find_field_value_value(guild.id, 'modules', 'logging', 'moderation', 'channel')
                     channell=self.bot.get_channel(int(b))
                     reason= f'`{entry.reason}`'
                     author= entry.user
@@ -530,9 +530,9 @@ class Logging(commands.Cog):
     async def on_member_unban(self,guild,user):
         try:
             async for entry in guild.audit_logs(limit=1, action=discord.AuditLogAction.unban):
-                await self.bot.server_config.find_field(guild.id, 'commands', 'logging_cmnd')
-                if await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'status') is True:
-                    b=await self.bot.server_config.find_field_value_value(guild.id, 'commands', 'logging_cmnd', 'moderation', 'channel')
+                await self.bot.server_config.find_field(guild.id, 'modules', 'logging')
+                if await self.bot.server_config.find_field_value_value(guild.id, 'modules', 'logging', 'moderation', 'status') is True:
+                    b=await self.bot.server_config.find_field_value_value(guild.id, 'modules', 'logging', 'moderation', 'channel')
                     channell=self.bot.get_channel(int(b))
                     reason= f'`{entry.reason}`'
                     author= entry.user
@@ -559,9 +559,9 @@ class Logging(commands.Cog):
     @commands.Cog.listener()    
     async def on_presence_update(self,before,after):
         try:
-            await self.bot.server_config.find_field(before.guild.id, 'commands', 'logging_cmnd')
-            if await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'activity', 'status') is True:
-                b=await self.bot.server_config.find_field_value_value(before.guild.id, 'commands', 'logging_cmnd', 'activity', 'channel')
+            await self.bot.server_config.find_field(before.guild.id, 'modules', 'logging')
+            if await self.bot.server_config.find_field_value_value(before.guild.id, 'modules', 'logging', 'activity', 'status') is True:
+                b=await self.bot.server_config.find_field_value_value(before.guild.id, 'modules', 'logging', 'activity', 'channel')
                 channel=self.bot.get_channel(int(b))
                 if not before.bot:
                     if before.activity != after.activity:

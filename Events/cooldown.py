@@ -10,7 +10,7 @@ class Cooldown(commands.Cog):
         self.bot = bot
         self.anti_spam= commands.CooldownMapping.from_cooldown(5, 15, commands.BucketType.member)
         self.too_many_violations= commands.CooldownMapping.from_cooldown(4, 60, commands.BucketType.member)
-
+"""
     @commands.Cog.listener()
     async def on_message(self, message):
         if type(message.channel) is not discord.TextChannel or message.author.bot: return
@@ -27,8 +27,9 @@ class Cooldown(commands.Cog):
                 await message.author.timeout(timedelta(minutes=10), reason= 'Spamming')
                 try: await message.author.send('You have been muted for spamming!')
                 except:pass
-
+  """
     
 
 async def setup(bot):
     await bot.add_cog(Cooldown(bot))
+  

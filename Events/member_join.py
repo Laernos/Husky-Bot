@@ -12,9 +12,9 @@ class Member_join(commands.Cog):
     async def on_member_join(self,member):
         
         try:
-            a=await self.bot.server_config.find_field_value(member.guild.id,'commands', 'welcome_cmnd', 'status')
+            a=await self.bot.server_config.find_field_value(member.guild.id,'modules', 'welcome', 'status')
             if a is True:
-                b=await self.bot.server_config.find_field_value(member.guild.id, 'commands', 'welcome_cmnd', 'channel')
+                b=await self.bot.server_config.find_field_value(member.guild.id, 'modules', 'welcome', 'channel')
                 channel=self.bot.get_channel(int(b))
                 background= Editor('pic3.png')
                 profile_image = await load_image_async(str(member.avatar.url))
@@ -24,7 +24,7 @@ class Member_join(commands.Cog):
                 background.paste(profile, (756,77))
                 background.text((450,140), f'{member.name}#{member.discriminator}', color='white', font=poppins, align='center')
                 file= File(fp=background.image_bytes, filename='pic1.jpg')
-                message= await self.bot.server_config.find_field_value(member.guild.id, 'commands', 'welcome_cmnd', 'message') or (f'Welcome to {member.guild.name}')
+                message= await self.bot.server_config.find_field_value(member.guild.id, 'modules', 'welcome', 'message') or (f'Welcome to {member.guild.name}')
                 await channel.send(message)
                 await channel.send(file=file)
         except KeyError:

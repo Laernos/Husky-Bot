@@ -9,6 +9,29 @@ import emotes as e
 import asyncio
 
 
+module=''
+
+def SecondEmbed(self, interaction):
+    embed=discord.Embed(title=f'Modules for {interaction.guild.name} ', description='You can enabled or disable modules for your server.')
+    embed.add_field(name='GENERAL MODULES', value= f'Welcome\nLogging', inline=True)
+    embed.add_field(name='SECURITY MODULES', value='Invite Deletion\nFlagged Links', inline=True)
+    embed.add_field(name='FUN MODULES', value='Guess Number\nCount Number', inline=True)  
+    return embed  
+
+class Channel(discord.ui.Modal, title='Set Channel'):
+    channel = ui.TextInput(label='Channel ID', style=discord.TextStyle.short, placeholder='Please provide a channel id')
+
+    async def on_submit(self, interaction:discord.Interaction):
+        await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'channel', str(self.channel))
+        await interaction.response.edit_message(embed=discord.Embed(title='annen', description='baban'), view=ModuleView())
+
+
+class Message(discord.ui.Modal, title='Set Message'):
+    message = ui.TextInput(label='Message', style=discord.TextStyle.short, placeholder='Please provide a message')
+
+    async def on_submit(self, interaction:discord.Interaction):
+        await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'message', str(self.message))
+        await interaction.response.send_message(f'Thank you for your submission! A copy of your subbmission has been sent to your dms', ephemeral=True)
 
 
 class Bug(discord.ui.Modal, title='Bug Report'):
@@ -49,22 +72,93 @@ class Bug(discord.ui.Modal, title='Bug Report'):
 
 class ModuleView(discord.ui.View):
     def __init__(self):
-        super().__init__()
-        self.module=None  
+        super().__init__()    
 
-    def create_InfoEmbed(self, interaction:discord.Interaction):
+    
+    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:main:1057073241753124864>')
+    async def back_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        await interaction.response.edit_message(embed=SecondEmbed(self,interaction), view=NewModuleView())
+
+    @discord.ui.button(label='Enable', style=discord.ButtonStyle.primary)
+    async def on_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        if button.label=='Enable':
+            button.label='Disable'
+            button.style= discord.ButtonStyle.red
+        else:
+            button.label='Enable'   
+            button.style= discord.ButtonStyle.green                     
+        await interaction.response.edit_message(view=self)
+
+    @discord.ui.button(label='Set Channel', style=discord.ButtonStyle.green)
+    async def channel_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        await interaction.response.send_modal(Channel())
+
+    @discord.ui.button(label='Set Message', style=discord.ButtonStyle.green)
+    async def message_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        await interaction.response.send_modal(Message())
+
+
+class NewModuleView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.category=None
+
+    async def data(self,interaction, module):
+
+        moduller= await interaction.client.server_config.find_document(interaction.guild.id, 'modules')
+        fields= moduller[module]
+
+        modules_list = {
+            "welcome": {
+                "title": "WELCOME",
+                "description": "Sends a welcome message to the welcome channel",
+                "field":fields
+            },
+            "Logging": {
+                "title": "LOGGING",
+                "description": "Logs everything happening in the server.",
+                "field":fields
+            },
+            "Guess Number": {
+                "title": "GUESS NUMBER",
+                "description": "Members try to guess the random generated number",
+                "field":{
+                    "Status": "ON",
+                    "Channel":"<#1053109369761452032>",
+                    "Hint":"20",
+                    "Give Role":f'{e.true_png_top}\n{e.true_png_buttom}',
+                    "Roles":"None"
+                }
+            },
+            "Count Number": {
+                "title": "LOGGING",
+                "description": "Logs everything happening in the server.",
+                "field":{
+                    "Status": "ON",
+                    "Channel":"<#1053109369761452032>",
+                    "Current Number":"0",
+                    "Give Role":f'{e.true_png_top}\n{e.true_png_buttom}',
+                    "Role": ""
+                }
+            }           
+        }
+        return modules_list
+
+    async def create_info(self, interaction:discord.Interaction, module):
+        modules= await self.data(interaction, module)
+        modules=modules[module]
         embed=discord.Embed(
-            title='Welcome Module',
-            description='Commands in this server start with `?`',
+            title= modules['title'],
+            description=modules['description'],
             color= 0x303434)
-        embed.add_field(name="・Help Panel", value="Welcome to Husky Bot's help panel! We have made a small overview to help you! \
-            Make a choice via the menu below.", inline=False)    
-        embed.add_field(name="・Links", value="[Invite](https://discord.com/api/oauth2/authorize?client_id=1049143343084490862&permissions=8&scope=bot) : [Support Server](https://discord.gg/a2R2KbFVWT) : [Status](https://huskybot1.statuspage.io/)", inline=False)   
+        for key, value in modules['field'].items():
+            embed.add_field(name=key, value=value)
         embed.set_author(name=interaction.guild.name, icon_url=interaction.guild.icon)
         return embed
 
 
-    def create_embed(self, interaction:discord.Interaction):
+
+    def MainEmbed(self, interaction):
         embed=discord.Embed(
             title="",
             description='Commands in this server start with `?`',
@@ -72,92 +166,28 @@ class ModuleView(discord.ui.View):
         embed.add_field(name="・Help Panel", value="Welcome to Husky Bot's help panel! We have made a small overview to help you! \
             Make a choice via the menu below.", inline=False)    
         embed.add_field(name="・Links", value="[Invite](https://discord.com/api/oauth2/authorize?client_id=1049143343084490862&permissions=8&scope=bot) : [Support Server](https://discord.gg/a2R2KbFVWT) : [Status](https://huskybot1.statuspage.io/)", inline=False)   
-        embed.set_author(name=interaction.guild.name, icon_url=interaction.guild.icon)
+        embed.set_author(name=interaction.guild.name, icon_url=interaction.guild.icon)        
         return embed
 
-    async def create_ModuleEmbed(self, interaction:discord.Interaction, wstatus:None):
-        if wstatus is None:
-            wstatus= f'ㅤ{e.false_png_top}\nㅤ{e.false_png_buttom}'
-        try:
-            a=await interaction.client.server_config.find_field_value(interaction.guild_id,'commands', 'welcome_cmnd', 'status')  
-            if a is True:
-                wstatus= f'ㅤ{e.true_png_top}\nㅤ{e.true_png_buttom}'
-        except:
-            pass  
-        embed=discord.Embed(title=f'Module Configs for {interaction.guild.name} ', description='You can enabled or disable modules for your server.')
-        embed.add_field(name='WELCOME', value= f'```Sends a welcome message to\nthe welcome channel```', inline=True)
-        embed.add_field(name='ㅤ', value=wstatus, inline=True)            
-        embed.add_field(name='ㅤ', value='ㅤ', inline=True)
-        embed.add_field(name='LOGGING', value= f'```Logs everythin happening in the server.```', inline=True)
-        embed.add_field(name='ㅤ', value=wstatus, inline=True)                   
-        embed.add_field(name='ㅤ', value='ㅤ', inline=True)   
-        return embed 
-
-    @discord.ui.select(placeholder="Select a module first",max_values=1,min_values=1,options=[
-            discord.SelectOption(label="Welcome",emoji="⚒️",description="Sends a welcome message to the welcome channel"),
-            discord.SelectOption(label="Logging",emoji="⚙️",description="Logs everythin happening in the server.")
-            ])         
+    @discord.ui.select(placeholder="Select a module first",max_values=1,min_values=1, options=[
+            discord.SelectOption(label="Welcome",value= "welcome",emoji="⚒️",description="Sends a welcome message to the welcome channel"),
+            discord.SelectOption(label="Logging",value= "logging",emoji="⚙️",description="Logs everythin happening in the server."),
+            discord.SelectOption(label="Invite Deletion",emoji="⚙️",description="Logs everythin happening in the server."),
+            discord.SelectOption(label="Flagged Links",emoji="⚙️",description="Logs everythin happening in the server."),
+            discord.SelectOption(label="Guess Number",value= "guess number",emoji="⚙️",description="Logs everythin happening in the server."),
+            discord.SelectOption(label="Count Number",value= "count number",emoji="⚙️",description="Logs everythin happening in the server."),                  
+            ])     
     async def select_callback(self, interaction: discord.Interaction, select:discord.ui.Select):
-        
-        try:
-            a=await interaction.client.server_config.find_field_value(interaction.guild_id,'commands', 'welcome_cmnd', 'status')  
-            if a is True:
-                self.enable_button.disabled= True
-                self.disable_button.disabled= False
-            else:
-                self.disable_button.disabled= False
-                self.enable_button.disabled= True
-        except:
-            self.disable_button.disabled= False
-            self.enable_button.disabled= True         
-        
-        
-        #buttons= [x for x in self.children]
-        #for button in buttons:
-        #    button.disabled=False
-
-        if select.values[0] == 'Welcome':
-            self.module= 'welcome'
-        
-        elif select.values[0] == 'Logging':
-            self.module= 'logging'     
-
-        await interaction.response.edit_message(view=self)
-
+        embed= await self.create_info(interaction,select.values[0])
+        await self.data(interaction, select.values[0])
+        global module
+        module=select.values[0]
+        await interaction.response.edit_message(embed=embed, view=ModuleView())
 
     @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:main:1057073241753124864>')
-    async def main_button(self, interaction:discord.Interaction, button:discord.ui.Button):
-        embed= self.create_embed(interaction)
-        await interaction.response.edit_message(embed=embed, view=MainView())
-
-    @discord.ui.button(label='Enable', style=discord.ButtonStyle.green, disabled=True)
-    async def enable_button(self, interaction:discord.Interaction, button:discord.ui.Button):
-        if self.module =='welcome':
-            wstatus= f'ㅤ{e.true_gif_top}\nㅤ{e.true_gif_buttom}'
-            embed= await self.create_ModuleEmbed(interaction, wstatus)
-            self.enable_button.disabled= True             
-            self.disable_button.disabled= False             
-            await interaction.response.edit_message(embed=embed, view=self)
-            await interaction.client.server_config.update_field_value(interaction.guild.id, 'commands','welcome_cmnd', 'status', True)
-
-
-    @discord.ui.button(label='Disable', style=discord.ButtonStyle.red, disabled=True)
-    async def disable_button(self, interaction:discord.Interaction, button:discord.ui.Button):
-        if self.module =='welcome':
-            await interaction.client.server_config.update_field_value(interaction.guild.id, 'commands','welcome_cmnd', 'status', False)
-            wstatus= f'ㅤ{e.false_gif_top}\nㅤ{e.false_gif_buttom}'
-            embed= await self.create_ModuleEmbed(interaction, wstatus)
-            self.disable_button.disabled= True
-            self.enable_button.disabled= False
-            await interaction.response.edit_message(embed=embed, view=self)   
-
-
-    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:info:1057118591733989457>')
-    async def info_button(self, interaction:discord.Interaction, button:discord.ui.Button):
-        embed= self.create_embed(interaction)
-        await interaction.response.edit_message(embed=embed, view=MainView())
-
-
+    async def back_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        await interaction.response.edit_message(embed=self.MainEmbed(interaction), view=MainView())
+        discord.ui.select.options='asd'
 
 class MainView(discord.ui.View):
     def __init__(self):
@@ -181,7 +211,7 @@ class MainView(discord.ui.View):
             embed.add_field(name='General Commands', value='`avatar`\n`echo`\n`huskies`\n`stats`')
             embed.add_field(name='Moderation Commands', value='`ban`\n`unban`\n`kick`\n`lock`')
             embed.add_field(name='Server Config Commands', value='`prefix`\n`welcome`\n`logging`')
-            embed.add_field(name='Owner Commands', value='`reload`\n`resetdb`')            
+            embed.add_field(name='Owner Commands', value='`reload`\n`resetdb`')    
             await interaction.response.edit_message(embed=embed, view=None)
 
 
@@ -218,19 +248,13 @@ class MainView(discord.ui.View):
                 wstatus= f'ㅤ{e.false_png_top}\nㅤ{e.false_png_buttom}'
                 lstatus= f'ㅤ{e.false_png_top}\nㅤ{e.false_png_buttom}'
                 try:
-                    a=await interaction.client.server_config.find_field_value(interaction.guild_id,'commands', 'welcome_cmnd', 'status')  
+                    a=await interaction.client.server_config.find_field_value(interaction.guild_id,'modules', 'welcome', 'status')  
                     if a is True:
                         wstatus= f'ㅤ{e.true_png_top}\nㅤ{e.true_png_buttom}'
                 except:
-                    pass  
-                embed=discord.Embed(title=f'Module Configs for {interaction.guild.name} ', description='You can enabled or disable modules for your server.')
-                embed.add_field(name='WELCOME', value= f'```Sends a welcome message to\nthe welcome channel```', inline=True)
-                embed.add_field(name='ㅤ', value=wstatus, inline=True)            
-                embed.add_field(name='ㅤ', value='ㅤ', inline=True)
-                embed.add_field(name='LOGGING', value= f'```Logs everythin happening in the server.```', inline=True)
-                embed.add_field(name='ㅤ', value=wstatus, inline=True)                   
-                embed.add_field(name='ㅤ', value='ㅤ', inline=True)            
-                await interaction.response.edit_message(embed=embed, view=ModuleView())
+                    pass 
+                                                                   
+                await interaction.response.edit_message(embed=SecondEmbed(self, interaction), view=NewModuleView())
             else:
                 await interaction.response.defer()
                 await interaction.followup.send('You dont have the permissions to do that!', ephemeral=True)
