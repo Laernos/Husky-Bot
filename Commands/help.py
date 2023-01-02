@@ -232,15 +232,22 @@ class Setup(discord.ui.Modal):
     async def on_submit(self, interaction:discord.Interaction):
         global status
         data ={'status':True,'channel':str(self.channel)}
+        view=ModuleView()
         if module=='welcome':
             data.update({'message': str(self.view.hint)})          
         elif module=='guess':
-            data.update({'hint': str(self.view.hint)})
+            view=ModuleView()
+            mdlview=ModuleView()
+            self.button=ui.Button(label='Set Hint', style=discord.ButtonStyle.green)
+            view.add_item(self.button)   
+            self.button.callback= mdlview.hint_callback            
+            data.update({'hint': str(self.view.hint)})       
+
         user_file= {f'modules.{module}':data}
         await interaction.client.server_config.update_dc(interaction.guild.id, user_file)
         status= True
         embed= await create_info(interaction)
-        await interaction.response.edit_message(embed=embed, view=self.view2)
+        await interaction.response.edit_message(embed=embed, view=view)
         
 
 class NodbView(discord.ui.View):
@@ -310,7 +317,6 @@ class ModuleView(discord.ui.View):
     async def info_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.defer()
         await interaction.followup.send(embed= await modules_info(interaction), ephemeral=True)
-
 
     async def hint_callback(self, interaction:discord.Interaction):
         await interaction.response.send_modal(Hint(self))
