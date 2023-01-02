@@ -39,11 +39,11 @@ class Guess(commands.Cog):
         elif len(message.mentions) <= 0 and (message.content.isnumeric()):
         # If message doesnt contain any mention and numeric
             try:
-                db=await self.bot.server_config.find_field_value(message.guild.id,'modules', 'guess_number', 'status')
-                channel= await self.bot.server_config.find_field_value(message.guild.id,'modules', 'guess_number', 'channel')
+                db=await self.bot.server_config.find_field_value(message.guild.id,'modules', 'guess', 'status')
+                channel= await self.bot.server_config.find_field_value(message.guild.id,'modules', 'guess', 'channel')
                 if db is True and channel == message.channel.id:
-                    number=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'guess_number', 'number')
-                    hint=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'guess_number', 'hint')              
+                    number=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'guess', 'number')
+                    hint=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'guess', 'hint')              
                     guess = int(message.content)                    
 
                     if 0 < guess <= 100:
@@ -69,7 +69,7 @@ class Guess(commands.Cog):
                             embed2.set_author(name= message.guild.name, icon_url=message.guild.icon)                           
                             await message.channel.send("", embeds=[embed, embed2])
                             number = random.randint(1, 100)   
-                            await self.bot.server_config.update_field_value(message.guild.id,'modules', 'welcome', 'number', number)
+                            await self.bot.server_config.update_field_value(message.guild.id,'modules', 'guess', 'number', number)
                             self.tries=0
                     else:
                     # Guess is not between 0 and 100    

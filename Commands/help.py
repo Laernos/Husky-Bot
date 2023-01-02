@@ -9,31 +9,6 @@ import emotes as e
 import asyncio
 
 
-module=''
-
-def SecondEmbed(self, interaction):
-    embed=discord.Embed(title=f'Modules for {interaction.guild.name} ', description='You can enabled or disable modules for your server.')
-    embed.add_field(name='GENERAL MODULES', value= f'Welcome\nLogging', inline=True)
-    embed.add_field(name='SECURITY MODULES', value='Invite Deletion\nFlagged Links', inline=True)
-    embed.add_field(name='FUN MODULES', value='Guess Number\nCount Number', inline=True)  
-    return embed  
-
-class Channel(discord.ui.Modal, title='Set Channel'):
-    channel = ui.TextInput(label='Channel ID', style=discord.TextStyle.short, placeholder='Please provide a channel id')
-
-    async def on_submit(self, interaction:discord.Interaction):
-        await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'channel', str(self.channel))
-        await interaction.response.edit_message(embed=discord.Embed(title='annen', description='baban'), view=ModuleView())
-
-
-class Message(discord.ui.Modal, title='Set Message'):
-    message = ui.TextInput(label='Message', style=discord.TextStyle.short, placeholder='Please provide a message')
-
-    async def on_submit(self, interaction:discord.Interaction):
-        await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'message', str(self.message))
-        await interaction.response.send_message(f'Thank you for your submission! A copy of your subbmission has been sent to your dms', ephemeral=True)
-
-
 class Bug(discord.ui.Modal, title='Bug Report'):
     
     description = ui.TextInput(label='Description', style=discord.TextStyle.paragraph, placeholder='A brief description of the bug.')
@@ -69,94 +44,285 @@ class Bug(discord.ui.Modal, title='Bug Report'):
                 pass
             await channel.send(embed=embed)
 
+module=''
+status=''
 
-class ModuleView(discord.ui.View):
-    def __init__(self):
-        super().__init__()    
+async def info_data():
+    modules_info = {
+        "welcome": {
+            "title": "WELCOME",
+            "description": "Sends a welcome message to the welcome channel",
+           "field":{
+                "Thins": 'you can do lots of things',
+                "More":'you can do whatever you want',
+                "Message":'message'
+            }
+        },
+        "logging": {
+            "title": "LOGGING",
+            "description": "Sends a welcome message to the welcome channel",
+           "field":{
+                "Thins": 'you can do lots of things',
+                "More":'you can do whatever you want',
+                "Message":'message'
+            }
+        },
+        "guess": {
+            "title": "GUESS NUMBER",
+            "description": "Sends a welcome message to the welcome channel",
+           "field":{
+                "Thins": 'you can do lots of things',
+                "More":'you can do whatever you want',
+                "Message":'message'
+            }
+        },
+        "count": {
+            "title": "COUNT",
+            "description": "Sends a welcome message to the welcome channel",
+           "field":{
+                "Thins": 'you can do lots of things',
+                "More":'you can do whatever you want',
+                "Message":'message'
+            }
+        },       
+    } 
+    return modules_info   
 
+async def data(interaction, update=None):
+    moduller= await interaction.client.server_config.find_document(interaction.guild.id, 'modules')
+    fields= moduller[module]
+    global status
+    try:
+        channel= await interaction.client.server_config.find_field_value(interaction.guild.id,'modules', module,'channel')
+    except KeyError:
+        pass
+    try:  
+        hint= await interaction.client.server_config.find_field_value(interaction.guild.id,'modules', module,'hint')
+    except KeyError:
+        hint='hint'
+    try:
+        message= await interaction.client.server_config.find_field_value(interaction.guild.id,'modules', module,'message')
+    except KeyError:
+        message='message'          
+
+    stat=''
+    if status is True:
+        stat= f'{e.true_png_top}\n{e.true_png_buttom}'
+    elif status is False:
+        stat=f'{e.false_png_top}\n{e.false_png_buttom}'
+
+    if update == 'enable':
+        stat= f'{e.true_gif_top}\n{e.true_gif_buttom}'
+    elif update == 'disable':
+        stat= f'{e.false_gif_top}\n{e.false_gif_buttom}'
+
+    modules_list = {
+        "welcome": {
+            "title": "WELCOME",
+            "description": "Sends a welcome message to the welcome channel",
+           "field":{
+                "Status": stat,
+                "Channel":f'<#{channel}>',
+                "Message":message
+            }
+        },
+        "Logging": {
+            "title": "LOGGING",
+            "description": "Logs everything happening in the server.",
+            "field":fields
+        },
+        "guess": {
+            "title": "GUESS NUMBER",
+            "description": "Members try to guess the random generated number",
+            "field":{
+                "Status": stat,
+                "Channel": f'<#{channel}>',
+                "Hint":hint,
+                "Give Role":f'{e.true_png_top}\n{e.true_png_buttom}',
+                "Roles":"None"
+            }
+        },
+        "Count Number": {
+            "title": "LOGGING",
+            "description": "Logs everything happening in the server.",
+            "field":{
+                "Status": "ON",
+                "Channel":"<#1053109369761452032>",
+                "Current Number":"0",
+                "Give Role":f'{e.true_png_top}\n{e.true_png_buttom}',
+                "Role": ""
+            }
+        }           
+    }
+    return modules_list
+
+async def create_info(interaction, update=None):
+    modules= await data(interaction, update)
+    modules=modules[module]
+    embed=discord.Embed(
+        title= modules['title'],
+        description=modules['description'],
+        color= 0x303434)
+    for key, value in modules['field'].items():
+        embed.add_field(name=key, value=value)
+    embed.set_author(name=interaction.guild.name, icon_url=interaction.guild.icon)
+    return embed
+
+async def modules_info(interaction):
+    modules= await info_data()
+    modules=modules[module]
+    embed=discord.Embed(
+        title= modules['title'],
+        description=modules['description'],
+        color= 0x303434)
+    for key, value in modules['field'].items():
+        embed.add_field(name=key, value=value)
+    embed.set_author(name=interaction.guild.name, icon_url=interaction.guild.icon)
+    return embed
+
+def SecondEmbed(self, interaction):
+    embed=discord.Embed(title=f'Modules for {interaction.guild.name} ', description='You can enabled or disable modules for your server.')
+    embed.add_field(name='GENERAL MODULES', value= f'Welcome\nLogging', inline=True)
+    embed.add_field(name='SECURITY MODULES', value='Invite Deletion\nFlagged Links', inline=True)
+    embed.add_field(name='FUN MODULES', value='Guess Number\nCount Number', inline=True)  
+    return embed  
+
+class Channel(discord.ui.Modal, title='Set Channel'):
+    channel = ui.TextInput(label='Channel ID', style=discord.TextStyle.short, placeholder='Please provide a channel id')
+
+    async def on_submit(self, interaction:discord.Interaction):
+        await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'channel', str(self.channel))
+        embed= await create_info(interaction)
+        await interaction.response.edit_message(embed=embed, view=ModuleView())
+
+class Message(discord.ui.Modal, title='Set Message'):
+    message = ui.TextInput(label='Message', style=discord.TextStyle.short, placeholder='Please provide a message')
+
+    async def on_submit(self, interaction:discord.Interaction):
+        await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'message', str(self.message))
+        embed= await create_info(interaction)
+        await interaction.response.edit_message(embed=embed, view=ModuleView())
+
+class Hint(discord.ui.Modal):
+    def __init__(self, view:discord.ui.View):
+        self.view = view
+        self.button=''
+        super().__init__(title=f'Set Hint')
+    hint = ui.TextInput(label='Hint', style=discord.TextStyle.short, placeholder='Please provide a hint count')
+
+    async def on_submit(self, interaction:discord.Interaction):
+        await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'hint', str(self.hint))
+        view=ModuleView()
+        mdlview=ModuleView()
+        self.button=ui.Button(label='Set Hint', style=discord.ButtonStyle.green)
+        view.add_item(self.button)   
+        self.button.callback= mdlview.hint_callback
+        embed= await create_info(interaction)
+        await interaction.response.edit_message(embed=embed, view=view)
+
+
+class Setup(discord.ui.Modal):
+    def __init__(self, view:discord.ui.View, view2:discord.ui.View):
+        self.view = view
+        self.view2= view2
+        super().__init__(title=f'Setup')
+
+    channel = ui.TextInput(label='Channel ID', style=discord.TextStyle.short, placeholder='Please provide a channel id')
     
+    async def on_submit(self, interaction:discord.Interaction):
+        global status
+        data ={'status':True,'channel':str(self.channel)}
+        if module=='welcome':
+            data.update({'message': str(self.view.hint)})          
+        elif module=='guess':
+            data.update({'hint': str(self.view.hint)})
+        user_file= {f'modules.{module}':data}
+        await interaction.client.server_config.update_dc(interaction.guild.id, user_file)
+        status= True
+        embed= await create_info(interaction)
+        await interaction.response.edit_message(embed=embed, view=self.view2)
+        
+
+class NodbView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.hint= '' 
+
     @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:main:1057073241753124864>')
     async def back_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.edit_message(embed=SecondEmbed(self,interaction), view=NewModuleView())
 
-    @discord.ui.button(label='Enable', style=discord.ButtonStyle.primary)
+    @discord.ui.button(label='Setup', style=discord.ButtonStyle.primary)
+    async def setup_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        view2=ModuleView()
+        modal=Setup(self, view2)
+        
+        if module == 'welcome':
+            self.hint= ui.TextInput(label='Message', style=discord.TextStyle.short, placeholder='Please provide a message')
+        elif module == 'guess':
+            self.hint= ui.TextInput(label='Hint', style=discord.TextStyle.short, placeholder='Please provide a hint count')
+        modal.add_item(self.hint) 
+        await interaction.response.send_modal(modal)
+
+
+class ModuleView(discord.ui.View):
+    def __init__(self):
+        super().__init__()
+        self.view=NewModuleView()
+        self.button=self.view.button
+
+
+    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:main:1057073241753124864>')
+    async def back_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        await interaction.response.edit_message(embed=SecondEmbed(self,interaction), view=NewModuleView())
+
+
+    @discord.ui.button(label='Disable', style=discord.ButtonStyle.red)
     async def on_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        embed=''
         if button.label=='Enable':
             button.label='Disable'
             button.style= discord.ButtonStyle.red
-        else:
-            button.label='Enable'   
-            button.style= discord.ButtonStyle.green                     
-        await interaction.response.edit_message(view=self)
+            self.channel_button.disabled=False
+            self.message_button.disabled=False
+            await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'status', True)    
+            embed= await create_info(interaction, 'enable')
+            await interaction.response.edit_message(embed=embed,view=self)
+        elif button.label=='Disable':
+            button.label='Enable'
+            button.style= discord.ButtonStyle.green
+            self.channel_button.disabled=True
+            self.message_button.disabled=True
+            await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'status', False)    
+            embed= await create_info(interaction, 'disable')                  
+            await interaction.response.edit_message(embed=embed,view=self)
 
-    @discord.ui.button(label='Set Channel', style=discord.ButtonStyle.green)
+    @discord.ui.button(label='Set Channel', style=discord.ButtonStyle.green,)
     async def channel_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        view=ModuleView()
         await interaction.response.send_modal(Channel())
 
-    @discord.ui.button(label='Set Message', style=discord.ButtonStyle.green)
+    @discord.ui.button(label='Set Message', style=discord.ButtonStyle.green,)
     async def message_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.send_modal(Message())
+
+    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:info:1057118591733989457>', row=1)
+    async def info_button(self, interaction:discord.Interaction, button:discord.ui.Button):
+        await interaction.response.defer()
+        await interaction.followup.send(embed= await modules_info(interaction), ephemeral=True)
+
+
+    async def hint_callback(self, interaction:discord.Interaction):
+        await interaction.response.send_modal(Hint(self))
+      
+
 
 
 class NewModuleView(discord.ui.View):
     def __init__(self):
         super().__init__()
         self.category=None
-
-    async def data(self,interaction, module):
-
-        moduller= await interaction.client.server_config.find_document(interaction.guild.id, 'modules')
-        fields= moduller[module]
-
-        modules_list = {
-            "welcome": {
-                "title": "WELCOME",
-                "description": "Sends a welcome message to the welcome channel",
-                "field":fields
-            },
-            "Logging": {
-                "title": "LOGGING",
-                "description": "Logs everything happening in the server.",
-                "field":fields
-            },
-            "Guess Number": {
-                "title": "GUESS NUMBER",
-                "description": "Members try to guess the random generated number",
-                "field":{
-                    "Status": "ON",
-                    "Channel":"<#1053109369761452032>",
-                    "Hint":"20",
-                    "Give Role":f'{e.true_png_top}\n{e.true_png_buttom}',
-                    "Roles":"None"
-                }
-            },
-            "Count Number": {
-                "title": "LOGGING",
-                "description": "Logs everything happening in the server.",
-                "field":{
-                    "Status": "ON",
-                    "Channel":"<#1053109369761452032>",
-                    "Current Number":"0",
-                    "Give Role":f'{e.true_png_top}\n{e.true_png_buttom}',
-                    "Role": ""
-                }
-            }           
-        }
-        return modules_list
-
-    async def create_info(self, interaction:discord.Interaction, module):
-        modules= await self.data(interaction, module)
-        modules=modules[module]
-        embed=discord.Embed(
-            title= modules['title'],
-            description=modules['description'],
-            color= 0x303434)
-        for key, value in modules['field'].items():
-            embed.add_field(name=key, value=value)
-        embed.set_author(name=interaction.guild.name, icon_url=interaction.guild.icon)
-        return embed
-
-
+        self.button=None
 
     def MainEmbed(self, interaction):
         embed=discord.Embed(
@@ -174,20 +340,37 @@ class NewModuleView(discord.ui.View):
             discord.SelectOption(label="Logging",value= "logging",emoji="⚙️",description="Logs everythin happening in the server."),
             discord.SelectOption(label="Invite Deletion",emoji="⚙️",description="Logs everythin happening in the server."),
             discord.SelectOption(label="Flagged Links",emoji="⚙️",description="Logs everythin happening in the server."),
-            discord.SelectOption(label="Guess Number",value= "guess number",emoji="⚙️",description="Logs everythin happening in the server."),
-            discord.SelectOption(label="Count Number",value= "count number",emoji="⚙️",description="Logs everythin happening in the server."),                  
+            discord.SelectOption(label="Guess Number",value= "guess",emoji="💯",description="Logs everythin happening in the server."),
+            discord.SelectOption(label="Count Number",value= "count",emoji="⚙️",description="Logs everythin happening in the server."),                  
             ])     
     async def select_callback(self, interaction: discord.Interaction, select:discord.ui.Select):
-        embed= await self.create_info(interaction,select.values[0])
-        await self.data(interaction, select.values[0])
         global module
+        global status
         module=select.values[0]
-        await interaction.response.edit_message(embed=embed, view=ModuleView())
+        try:
+            status= await interaction.client.server_config.find_field_value(interaction.guild.id,'modules', module,'status')
+            view=ModuleView()
+            if status is False:    
+                view.on_button.label='Enable'
+                view.on_button.style=discord.ButtonStyle.green
+                view.channel_button.disabled=True
+                view.message_button.disabled=True
+            if select.values[0] =='guess':
+                mdlview=ModuleView()
+                self.button=ui.Button(label='Set Hint', style=discord.ButtonStyle.green)
+                view.add_item(self.button)   
+                self.button.callback= mdlview.hint_callback
+            embed= await create_info(interaction)  
+        except KeyError:
+            status= False
+            view=NodbView()  
+            embed= await modules_info(interaction) 
+        await interaction.response.edit_message(embed=embed, view=view)
+
 
     @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:main:1057073241753124864>')
     async def back_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.edit_message(embed=self.MainEmbed(interaction), view=MainView())
-        discord.ui.select.options='asd'
 
 class MainView(discord.ui.View):
     def __init__(self):
