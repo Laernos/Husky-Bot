@@ -36,7 +36,7 @@ async def get_prefix(bot, message):
 
 def run():
     intents= discord.Intents.all()
-    bot = commands.Bot(command_prefix=get_prefix, owner_id = 344034871230070784,intents=intents,help_command=None)
+    bot = commands.Bot(command_prefix=get_prefix, owner_id = (YOUR ID HERE) ,intents=intents,help_command=None)
 
     status= cycle(['!help | huskybot.net', f'{len(bot.guilds)} servers'])
 
