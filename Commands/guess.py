@@ -16,7 +16,6 @@ class Guess(commands.Cog):
     async def on_message(self, message):
                
 
-
         def hintnumbers(self, number):
             self.hint1= number - random.randint(1, 15)
             self.hint2= number + random.randint(1, 15)
@@ -41,9 +40,12 @@ class Guess(commands.Cog):
             try:
                 db=await self.bot.server_config.find_field_value(message.guild.id,'modules', 'guess', 'status')
                 channel= await self.bot.server_config.find_field_value(message.guild.id,'modules', 'guess', 'channel')
+                channel=int(channel)
                 if db is True and channel == message.channel.id:
                     number=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'guess', 'number')
-                    hint=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'guess', 'hint')              
+                    number=int(number)
+                    hint=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'guess', 'hint')
+                    hint=int(hint)              
                     guess = int(message.content)                    
 
                     if 0 < guess <= 100:

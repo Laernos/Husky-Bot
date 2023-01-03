@@ -23,32 +23,33 @@ class Count(commands.Cog):
             await message.delete(delay=5)
         elif len(message.mentions) <= 0 and (message.content.isnumeric()):
             try:
-                db=await self.bot.server_config.find_field_value(message.guild.id,'modules', 'welcome', 'status')
-                channel= await self.bot.server_config.find_field_value(message.guild.id,'modules', 'welcome', 'channel')
+                db=await self.bot.server_config.find_field_value(message.guild.id,'modules', 'count', 'status')
+                channel= await self.bot.server_config.find_field_value(message.guild.id,'modules', 'count', 'channel')
+                channel=int(channel)
                 if db is True and channel == message.channel.id:
-                    count=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'welcome', 'count')
-                    ardarda=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'welcome', 'topic')       
+                    count=await self.bot.server_config.find_field_value(message.guild.id, 'modules', 'count', 'count')  
                     number = int(message.content) 
                     next_number= count + 1     
 
-                    if message.author.id != self.last_counter: 
-                        if number == next_number:
-                            await self.bot.server_config.update_field_value(message.guild.id,'modules', 'welcome', 'count', next_number)
-                            self.last_counter= message.author.id
+                    
+                    #if message.author.id != self.last_counter: 
+                    if number == next_number:
+                        await self.bot.server_config.update_field_value(message.guild.id,'modules', 'count', 'count', next_number)
+                        self.last_counter= message.author.id
 
-                            if next_number == 10 or next_number == 50  or next_number == 100 or next_number == 300 or next_number == 500 or next_number == 1000 or next_number == 5000:
-                                await message.reply(f'We have reached count {next_number}')
-                                await message.pin(reason=f'Server reached count {next_number} in {message.channel.name}')
+                        if next_number == 10 or next_number == 50  or next_number == 100 or next_number == 300 or next_number == 500 or next_number == 1000 or next_number == 5000:
+                            await message.reply(f'We have reached count {next_number}')
+                            await message.pin(reason=f'Server reached count {next_number} in {message.channel.name}')
 
-                        else:                        
-                            reply= await message.reply(f'> WRONG NUMBER\n Next Number: {next_number}')  
-                            await reply.delete(delay=5)
-                            await message.delete(delay=5)
-
-                    else:
-                        reply= await message.reply(f'> You cannot count by yourself')  
+                    else:                        
+                        reply= await message.reply(f'> WRONG NUMBER\n Next Number: {next_number}')  
                         await reply.delete(delay=5)
-                        await message.delete(delay=5)                        
+                        await message.delete(delay=5)
+
+                    #else:
+                        #reply= await message.reply(f'> You cannot count by yourself')  
+                        #await reply.delete(delay=5)
+                        #await message.delete(delay=5)                        
                     
 
 

@@ -50,8 +50,10 @@ status=''
 async def info_data():
     modules_info = {
         "welcome": {
-            "title": "WELCOME",
-            "description": "Sends a welcome message to the welcome channel",
+            "title": "Welcoming",
+            "description": "The welcome module is a feature that allows you to customize the greeting message that is sent to new members when they join your server.\n\n \
+                the bot will send a banner card to the designated channel every time a new member joins the server. The banner card will include the new member's name and profile picture.\n\n \
+                The welcome module is a great way to make new members feel welcomed and included in your server. Have fun greeting your new members!    ",
            "field":{
                 "Thins": 'you can do lots of things',
                 "More":'you can do whatever you want',
@@ -67,9 +69,24 @@ async def info_data():
                 "Message":'message'
             }
         },
+        "report": {
+            "title": "Report Member/Message",
+            "description": "The report module is a context menu, it allows member to access additional options by right-clicking on a member or message in the server.\n\n \
+                If members right-click on a member, they will see an option to report them. If they select this option, they will be asked to provide a reason for the report.\n \
+                This report will be sent to the server moderators.\n\nIf members right-click on a message, they will see an option to report the message. If they select this option, they will be asked to provide a reason for the report.\n \
+                This report will be sent to the server moderators.",
+           "field":{
+                "Thins": 'you can do lots of things',
+                "More":'you can do whatever you want',
+                "Message":'message'
+            }
+        },        
         "guess": {
-            "title": "GUESS NUMBER",
-            "description": "Sends a welcome message to the welcome channel",
+            "title": " 💯 Guessing Numbers",
+            "description": "Welcome to the guessing the numbers! In this activity, the bot will create a random number between 0 and 100 and users will try to guess the number.\n\n \
+                To participate, simply type your guess in the designated channel.\n\n\
+                If you try to guess the number 5 times without success, the bot will give you a hint by saying the number is between two specific numbers (e.g. \"The number is between 50 and 75\").\n\n\
+                The first person to guess the correct number wins the event. Have fun guessing!",
            "field":{
                 "Thins": 'you can do lots of things',
                 "More":'you can do whatever you want',
@@ -77,8 +94,11 @@ async def info_data():
             }
         },
         "count": {
-            "title": "COUNT",
-            "description": "Sends a welcome message to the welcome channel",
+            "title": "🔢 Counting Numbers",
+            "description": "Welcome to the counting numbers! In this activity, members can participate by counting up in order.\n\n\
+                To join the event, simply type a number in the channel. The next person must then type the next number in the sequence, and so on.\n\n \
+                Rules:\nOnly numbers are allowed (no decimals or negative numbers).\nYou must type the next number in the sequence (e.g. if the last number typed was 3, you must type 4).\n \
+                Do not type a number that has already been used.\nDo not spam the channel with numbers.",
            "field":{
                 "Thins": 'you can do lots of things',
                 "More":'you can do whatever you want',
@@ -98,12 +118,18 @@ async def data(interaction, update=None):
         pass
     try:  
         hint= await interaction.client.server_config.find_field_value(interaction.guild.id,'modules', module,'hint')
+        number= await interaction.client.server_config.find_field_value(interaction.guild.id,'modules', module,'number')
     except KeyError:
         hint='hint'
+        number='number'
     try:
         message= await interaction.client.server_config.find_field_value(interaction.guild.id,'modules', module,'message')
     except KeyError:
-        message='message'          
+        message='message'
+    try:
+        count= await interaction.client.server_config.find_field_value(interaction.guild.id,'modules', module,'count')
+    except KeyError:
+        count='count'                     
 
     stat=''
     if status is True:
@@ -126,11 +152,19 @@ async def data(interaction, update=None):
                 "Message":message
             }
         },
-        "Logging": {
+        "logging": {
             "title": "LOGGING",
             "description": "Logs everything happening in the server.",
             "field":fields
         },
+        "report": {
+            "title": "Report",
+            "description": "Logs everything happening in the server.",
+           "field":{
+                "Status": stat,
+                "Channel":f'<#{channel}>',
+            }
+        },        
         "guess": {
             "title": "GUESS NUMBER",
             "description": "Members try to guess the random generated number",
@@ -138,19 +172,16 @@ async def data(interaction, update=None):
                 "Status": stat,
                 "Channel": f'<#{channel}>',
                 "Hint":hint,
-                "Give Role":f'{e.true_png_top}\n{e.true_png_buttom}',
-                "Roles":"None"
+                'Current Number':number,
             }
         },
-        "Count Number": {
-            "title": "LOGGING",
+        "count": {
+            "title": "Count Number",
             "description": "Logs everything happening in the server.",
             "field":{
-                "Status": "ON",
-                "Channel":"<#1053109369761452032>",
-                "Current Number":"0",
-                "Give Role":f'{e.true_png_top}\n{e.true_png_buttom}',
-                "Role": ""
+                "Status": stat,
+                "Channel":f'<#{channel}>',
+                "Count":count,
             }
         }           
     }
@@ -183,7 +214,7 @@ async def modules_info(interaction):
 def SecondEmbed(self, interaction):
     embed=discord.Embed(title=f'Modules for {interaction.guild.name} ', description='You can enabled or disable modules for your server.')
     embed.add_field(name='GENERAL MODULES', value= f'Welcome\nLogging', inline=True)
-    embed.add_field(name='SECURITY MODULES', value='Invite Deletion\nFlagged Links', inline=True)
+    embed.add_field(name='SECURITY MODULES', value='Report', inline=True)
     embed.add_field(name='FUN MODULES', value='Guess Number\nCount Number', inline=True)  
     return embed  
 
@@ -191,17 +222,36 @@ class Channel(discord.ui.Modal, title='Set Channel'):
     channel = ui.TextInput(label='Channel ID', style=discord.TextStyle.short, placeholder='Please provide a channel id')
 
     async def on_submit(self, interaction:discord.Interaction):
-        await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'channel', str(self.channel))
-        embed= await create_info(interaction)
-        await interaction.response.edit_message(embed=embed, view=ModuleView())
+        channels=[]
+        for c in interaction.guild.channels:
+            channels.append(str(c.id))
+            
+        if str(self.channel.value) in channels:   
+            await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'channel', str(self.channel))
+            embed= await create_info(interaction)
+            await interaction.response.edit_message(embed=embed, view=ModuleView())
 
-class Message(discord.ui.Modal, title='Set Message'):
+        elif str(self.channel.value) not in channels:
+            await interaction.response.defer()
+            await interaction.followup.send('> ⭕ **You need to enter a valid channel id!**', ephemeral=True)
+
+
+class Message(discord.ui.Modal,):
+    def __init__(self, view:discord.ui.View):
+        self.view = view
+        self.button=''
+        super().__init__(title=f'Set message')
     message = ui.TextInput(label='Message', style=discord.TextStyle.short, placeholder='Please provide a message')
 
     async def on_submit(self, interaction:discord.Interaction):
         await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'message', str(self.message))
+        view=ModuleView()
+        mdlview=ModuleView()
+        self.button=ui.Button(label='Set Message', style=discord.ButtonStyle.green)
+        view.add_item(self.button)   
+        self.button.callback= mdlview.message2_callback        
         embed= await create_info(interaction)
-        await interaction.response.edit_message(embed=embed, view=ModuleView())
+        await interaction.response.edit_message(embed=embed, view=view)
 
 class Hint(discord.ui.Modal):
     def __init__(self, view:discord.ui.View):
@@ -211,6 +261,7 @@ class Hint(discord.ui.Modal):
     hint = ui.TextInput(label='Hint', style=discord.TextStyle.short, placeholder='Please provide a hint count')
 
     async def on_submit(self, interaction:discord.Interaction):
+
         await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'hint', str(self.hint))
         view=ModuleView()
         mdlview=ModuleView()
@@ -234,20 +285,37 @@ class Setup(discord.ui.Modal):
         data ={'status':True,'channel':str(self.channel)}
         view=ModuleView()
         if module=='welcome':
+            view=ModuleView()
+            mdlview=ModuleView()
+            self.button=ui.Button(label='Set Message', style=discord.ButtonStyle.green)
+            view.add_item(self.button)   
+            self.button.callback= mdlview.message2_callback             
             data.update({'message': str(self.view.hint)})          
         elif module=='guess':
             view=ModuleView()
             mdlview=ModuleView()
             self.button=ui.Button(label='Set Hint', style=discord.ButtonStyle.green)
             view.add_item(self.button)   
-            self.button.callback= mdlview.hint_callback            
-            data.update({'hint': str(self.view.hint)})       
-
+            self.button.callback= mdlview.hint_callback                        
+            data.update({'hint': str(self.view.hint), 'number':1})
+        elif module=='count':
+            data.update({'count': 1})
+            channel= interaction.client.get_channel(int(self.channel.value))
+            await channel.send('1')
         user_file= {f'modules.{module}':data}
-        await interaction.client.server_config.update_dc(interaction.guild.id, user_file)
-        status= True
-        embed= await create_info(interaction)
-        await interaction.response.edit_message(embed=embed, view=view)
+
+        channels=[]
+        for c in interaction.guild.channels:
+            channels.append(str(c.id))
+            
+        if str(self.channel.value) in channels:   
+            await interaction.client.server_config.update_dc(interaction.guild.id, user_file)
+            status= True
+            embed= await create_info(interaction)
+            await interaction.response.edit_message(embed=embed, view=view)
+        else:
+            await interaction.response.defer()
+            await interaction.followup.send('> ⭕ **You need to enter a valid channel id!**', ephemeral=True)                
         
 
 class NodbView(discord.ui.View):
@@ -259,16 +327,17 @@ class NodbView(discord.ui.View):
     async def back_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.edit_message(embed=SecondEmbed(self,interaction), view=NewModuleView())
 
-    @discord.ui.button(label='Setup', style=discord.ButtonStyle.primary)
+    @discord.ui.button(label='Setup', style=discord.ButtonStyle.green)
     async def setup_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         view2=ModuleView()
         modal=Setup(self, view2)
         
         if module == 'welcome':
             self.hint= ui.TextInput(label='Message', style=discord.TextStyle.short, placeholder='Please provide a message')
+            modal.add_item(self.hint)
         elif module == 'guess':
             self.hint= ui.TextInput(label='Hint', style=discord.TextStyle.short, placeholder='Please provide a hint count')
-        modal.add_item(self.hint) 
+            modal.add_item(self.hint) 
         await interaction.response.send_modal(modal)
 
 
@@ -291,7 +360,6 @@ class ModuleView(discord.ui.View):
             button.label='Disable'
             button.style= discord.ButtonStyle.red
             self.channel_button.disabled=False
-            self.message_button.disabled=False
             await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'status', True)    
             embed= await create_info(interaction, 'enable')
             await interaction.response.edit_message(embed=embed,view=self)
@@ -299,7 +367,6 @@ class ModuleView(discord.ui.View):
             button.label='Enable'
             button.style= discord.ButtonStyle.green
             self.channel_button.disabled=True
-            self.message_button.disabled=True
             await interaction.client.server_config.update_field_value(interaction.guild.id,'modules', module, 'status', False)    
             embed= await create_info(interaction, 'disable')                  
             await interaction.response.edit_message(embed=embed,view=self)
@@ -309,14 +376,15 @@ class ModuleView(discord.ui.View):
         view=ModuleView()
         await interaction.response.send_modal(Channel())
 
-    @discord.ui.button(label='Set Message', style=discord.ButtonStyle.green,)
-    async def message_button(self, interaction:discord.Interaction, button:discord.ui.Button):
-        await interaction.response.send_modal(Message())
+
 
     @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:info:1057118591733989457>', row=1)
     async def info_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.defer()
         await interaction.followup.send(embed= await modules_info(interaction), ephemeral=True)
+
+    async def message2_callback(self,interaction:discord.Interaction):
+        await interaction.response.send_modal(Message(self))        
 
     async def hint_callback(self, interaction:discord.Interaction):
         await interaction.response.send_modal(Hint(self))
@@ -344,10 +412,9 @@ class NewModuleView(discord.ui.View):
     @discord.ui.select(placeholder="Select a module first",max_values=1,min_values=1, options=[
             discord.SelectOption(label="Welcome",value= "welcome",emoji="⚒️",description="Sends a welcome message to the welcome channel"),
             discord.SelectOption(label="Logging",value= "logging",emoji="⚙️",description="Logs everythin happening in the server."),
-            discord.SelectOption(label="Invite Deletion",emoji="⚙️",description="Logs everythin happening in the server."),
-            discord.SelectOption(label="Flagged Links",emoji="⚙️",description="Logs everythin happening in the server."),
+            discord.SelectOption(label="Report",value= "report",emoji="⭕",description="Logs everythin happening in the server."),
             discord.SelectOption(label="Guess Number",value= "guess",emoji="💯",description="Logs everythin happening in the server."),
-            discord.SelectOption(label="Count Number",value= "count",emoji="⚙️",description="Logs everythin happening in the server."),                  
+            discord.SelectOption(label="Count Number",value= "count",emoji="🔢",description="Logs everythin happening in the server."),                  
             ])     
     async def select_callback(self, interaction: discord.Interaction, select:discord.ui.Select):
         global module
@@ -360,8 +427,13 @@ class NewModuleView(discord.ui.View):
                 view.on_button.label='Enable'
                 view.on_button.style=discord.ButtonStyle.green
                 view.channel_button.disabled=True
-                view.message_button.disabled=True
-            if select.values[0] =='guess':
+
+            if select.values[0] =='welcome':    
+                mdlview=ModuleView()
+                self.button=ui.Button(label='Set Message', style=discord.ButtonStyle.green)
+                view.add_item(self.button)   
+                self.button.callback= mdlview.message2_callback                           
+            elif select.values[0] =='guess':
                 mdlview=ModuleView()
                 self.button=ui.Button(label='Set Hint', style=discord.ButtonStyle.green)
                 view.add_item(self.button)   
