@@ -3,7 +3,12 @@ from discord.ext import commands
 from discord import app_commands
 from datetime import datetime
 import asyncio
-#I'm not proud of myself with this code but it works u know.
+
+"""
+!CAUTION!:
+    POORLY CODED CODE, WRITTEN BEFORE I KNEW LOOPS WERE EXISTENT!
+    BUT IT WORKS THO!
+"""
 
 class Logging(commands.Cog):
 
