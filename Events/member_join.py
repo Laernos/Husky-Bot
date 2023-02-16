@@ -31,15 +31,5 @@ class Member_join(commands.Cog):
             pass
 
 
-       # try:
-       #     if self.bot.muted_users[member.id]:
-       #         role = discord.utils.get(member.guild.roles, name= 'Muted')
-       #         if role:
-       #             await member.add_roles(role)
-       #             print(f'Remuted {member.display_name} upon guild entry')
-       # except KeyError:
-       #     pass
-
-
 async def setup(bot):
     await bot.add_cog(Member_join(bot))
