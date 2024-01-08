@@ -1,11 +1,8 @@
-
-
 <p align="center">
-    <img src="https://github.com/Laernos/readme/assets/55562998/044fdacd-b5a1-4e67-ab2a-6835d34f69f2.png" alt="Husky Bot Logo" width="500">
+    <img src="https://github.com/Laernos/Husky/assets/55562998/2599079e-6371-4e72-944c-936ab0b532a1.png" alt="Husky Bot Logo" width="500">
 </p>
 
 Husky Bot is a Discord bot that is designed to help manage your Discord server. It includes a wide range of features, including moderation tools, utility commands, and fun commands to keep your server engaged.
-
 
 ## Table of Contents
 - ✨ [Features](#features)
@@ -13,10 +10,6 @@ Husky Bot is a Discord bot that is designed to help manage your Discord server. 
 - 🛠️ [Installation](#installation)
 - 🤝 [Contributing](#contributing)
 - 📄 [License](#license)
-
-
-
-
 
 ## ✨Features
 
@@ -27,7 +20,7 @@ Husky Bot is a Discord bot that is designed to help manage your Discord server. 
 Turn modules on or off with an intuitive toggle system, giving you complete control over your server's functionality.
 </td>
 <td align="right">
-    <img src="https://github.com/Laernos/readme/assets/55562998/563b75f0-106a-4975-b0fb-552ee6f8e3e4.gif" alt="Main Feature" width="600">
+    <img src="https://github.com/Laernos/Husky/assets/55562998/604c1edb-36b6-4b27-a137-4a51ee89c828.gif" alt="Main Feature" width="600">
 </td>
 </tr></table></details>
 
@@ -40,7 +33,7 @@ Turn modules on or off with an intuitive toggle system, giving you complete cont
 Husky Bot harnesses the power of MongoDB, to ensure smooth management and operation across multiple servers. Each time Husky joins a new Discord server, it cleverly creates a unique database entry. This means every server gets its own dedicated space for bot configurations and data, allowing for highly personalized settings.
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/037b499c-c0a8-4f20-8d17-e3e06cee6c14.png" alt="MongoDB" width="1500">
+      <img src="https://github.com/Laernos/Husky/assets/55562998/2057963e-b47c-4454-a389-e9f5ff3ce6e5.png" alt="MongoDB" width="1500">
     </td>
   </tr>
   <tr>
@@ -48,7 +41,7 @@ Husky Bot harnesses the power of MongoDB, to ensure smooth management and operat
 As the owner, you have full control over the bot's interactions with various servers. Whenever the bot joins or leaves a server, it automatically sends a notification to the support server. This notification includes essential information like the server owner's name, the total member count of the server, and the server's icon. This feature is designed to keep you well-informed about the bot's presence across different servers, ensuring effective monitoring and management of its activities.
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/01335f36-227d-4657-b22c-bfcc14055b5f.png" alt="On server join" width="1500">
+      <img src="https://github.com/Laernos/Husky/assets/55562998/0d5af50f-57b7-4d16-a1f1-373911420a6b.png" alt="On server join" width="1500">
     </td>
   </tr>
 </table>
@@ -67,7 +60,7 @@ If members right-click on a message, they will see an option to report the messa
 This report will be sent to the server moderators.
 </td>
 <td align="right">
-    <img src="https://github.com/Laernos/readme/assets/55562998/8c87a1d7-c404-4518-acc6-0424191b03c2.gif" alt="Report Message" width="500">
+    <img src="https://github.com/Laernos/Husky/assets/55562998/bbae1c39-b468-4278-9204-aa88e3543267.gif" alt="Report Message" width="500">
 </td>
 </tr></table></details>
 
@@ -82,7 +75,7 @@ Once a bug report is submitted, the system automatically sends a copy to both th
 Users can report bugs effortlessly, ensuring quick fixes and stable performance.
 </td>
 <td align="right">
-    <img src="https://github.com/Laernos/readme/assets/55562998/5d556347-258f-4555-9faf-7b00f8dd3b5e.gif" alt="Bug Report" width="600">
+    <img src="https://github.com/Laernos/Husky/assets/55562998/e331d0f3-04fe-4bf6-8a7b-dbbe9f84b240.gif" alt="Bug Report" width="600">
 </td>
 </tr></table></details>
 
@@ -97,14 +90,14 @@ Users can report bugs effortlessly, ensuring quick fixes and stable performance.
       Tracks key server-wide events, such as role changes, channel updates, and server settings alterations.
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/aff64fbc-be8d-4cb4-9545-807128912ad3.png" alt="Toggle System" width="400">
+      <img src="https://github.com/Laernos/Husky/assets/55562998/b2a9009f-22c5-4414-a746-7b76e418246c.png" alt="Toggle System" width="400">
     </td>
     <td valign="top">
         Member Logging <br><br>
       Monitors individual member actions like joins, leaves, nickname changes, and role assignments.
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/e753a44a-9022-4a45-bb98-39533982add6.png" alt="Server Activity Insights" width="400">
+      <img src="https://github.com/Laernos/Husky/assets/55562998/23d9e403-2ac8-4047-81c1-be45925339b8.png" alt="Server Activity Insights" width="400">
     </td>
   </tr>
   <tr>
@@ -113,14 +106,14 @@ Users can report bugs effortlessly, ensuring quick fixes and stable performance.
       Records all moderation actions, such as kicks, bans, and unbans, providing a clear audit trail for moderators' actions.
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/56003c73-1454-415c-8427-2fee89b2fe55.png" alt="Real-time Monitoring" width="2000">
+      <img src="https://github.com/Laernos/Husky/assets/55562998/772d0209-1a19-4270-9e56-169b15b66cbc.png" alt="Real-time Monitoring" width="2000">
     </td>
     <td valign="top">
         Message Logging <br><br>
       Keeps a record of message activities, including message edits and deletions, which can be crucial for resolving disputes and monitoring compliance with server rules.
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/884822e4-9fa9-43a7-9ba6-d2a602509219.png" alt="Customizable Logging" width="2000">
+      <img src="https://github.com/Laernos/Husky/assets/55562998/2e9200db-456f-4bac-b6db-b170c1fd10c4.png" alt="Customizable Logging" width="2000">
     </td>
   </tr>
   <tr>
@@ -129,14 +122,14 @@ Users can report bugs effortlessly, ensuring quick fixes and stable performance.
       Logs all voice channel activities, such as users joining or leaving voice channels, which can be useful for managing voice chat and resolving any related issues.
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/f60522b5-4b16-41d8-9935-d4e9318a912d.png" alt="User-friendly Interface" width="800">
+      <img src="https://github.com/Laernos/Husky/assets/55562998/f3c62a05-232e-4bef-81f5-1143f49c974c.png" alt="User-friendly Interface" width="800">
     </td>
     <td valign="top">
         Activity Logging <br><br>
       Keeps track of user statuses, such as when members start or stop playing games. This allows moderators to see who is active and what games are popular within the community.
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/b594b23c-9cf6-4b57-ad1c-bb396924f7af.png" alt="Advanced Security" width="2000">
+      <img src="https://github.com/Laernos/Husky/assets/55562998/1df4e974-91a4-4565-86bf-60405566abb1.png" alt="Advanced Security" width="2000">
     </td>
   </tr>
 </table>
@@ -153,10 +146,9 @@ The bot will send a banner card to the designated channel every time a new membe
 The welcome module is a great way to make new members feel welcomed and included in your server. Have fun greeting your new members!
 </td>
 <td align="right">
-    <img src="https://github.com/Laernos/readme/assets/55562998/c3ae37b0-daaa-4ff9-9371-dd98317dff58.png" alt="Welcome Banner" width="1000">  
+    <img src="https://github.com/Laernos/Husky/assets/55562998/ee66798e-502f-468c-8a5d-997337d2b40c.png" alt="Welcome Banner" width="1000">  
 </td>
 </tr></table></details>
-
 
 <details>
 <summary>Fun Games</summary>
@@ -174,7 +166,7 @@ The welcome module is a great way to make new members feel welcomed and included
       - Do not spam the channel with numbers.
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/c6d6a6cf-7049-403e-bcd8-ae18542f2a99.png" alt="Count Numbers" width="800">   
+      <img src="https://github.com/Laernos/Husky/assets/55562998/3b5aa61a-d6d2-49e7-a8ea-5804cb4a6bae.png" alt="Count Numbers" width="800">   
     </td>
   </tr>
   <tr>
@@ -186,19 +178,11 @@ The welcome module is a great way to make new members feel welcomed and included
       The first person to guess the correct number wins the event. Have fun guessing!
     </td>
     <td>
-      <img src="https://github.com/Laernos/readme/assets/55562998/7c05ca4a-c546-4442-9a48-e6a5606153ab.png" alt="Guess Number" width="800">    
+      <img src="https://github.com/Laernos/Husky/assets/55562998/c3a87a8f-6b42-4e0c-aa1a-7dd93729d710.png" alt="Guess Number" width="800">    
     </td>
   </tr>
 </table>
 </details>
-
-
-
-
-
-
-
-
 
 
 ## 📜 Commands
@@ -301,7 +285,6 @@ Follow these steps to install and set up Husky:
         ```
 
       
-      
 5. **Configure the bot**
    
     Create a `.env` file in the root directory of your Husky bot project and fill it with the following variables:
@@ -339,4 +322,3 @@ Husky is licensed under the [MIT](LICENSE). If you plan to use any part of this 
 
 > [!WARNING]
 > Just a friendly reminder that while Husky Bot comes packed with cool features, I haven't had the chance to do a full-on security check. So, you might want to take a look under the hood to ensure everything is functioning as it should.
-
