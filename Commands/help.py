@@ -7,6 +7,14 @@ import psutil
 from dateutil.relativedelta import relativedelta
 import emotes as e
 import asyncio
+import os
+
+GUILD_INVITE = os.getenv("GUILD_INVITE")
+STATUS_PAGE = os.getenv("STATUS_PAGE")
+BOT_INVITE_LINK = os.getenv("BOT_INVITE_LINK")
+BUG_REPORT_CHANNEL_ID = int(os.getenv("BUG_REPORT_CHANNEL_ID"))
+OWNER_ID = int(os.getenv("OWNER_ID"))
+
 
 
 class Bug(discord.ui.Modal, title='Bug Report'):
@@ -18,7 +26,7 @@ class Bug(discord.ui.Modal, title='Bug Report'):
     add_info=ui.TextInput(label='Additional Info (optional) ', style=discord.TextStyle.paragraph, placeholder='More info or screenshot urls (https://imgur.com/6IS1jmH.png)', required=False)
 
     async def on_submit(self, interaction:discord.Interaction):
-        channel= interaction.client.get_channel(1055696376404639916)
+        channel= interaction.client.get_channel(BUG_REPORT_CHANNEL_ID)
         dm= await interaction.user.create_dm()
         embed1=discord.Embed(title='Bug Report Submission', description='')
         embed1.add_field(name='USER', value=f'{interaction.user.name}#{interaction.user.discriminator}\n`{interaction.user.id}`')
@@ -30,7 +38,7 @@ class Bug(discord.ui.Modal, title='Bug Report'):
         embed5=discord.Embed(title='Actual Result', description=self.ac_result)
         embed6=discord.Embed(title='Additional Info', description=self.add_info,timestamp= datetime.now())
         embeds=[embed1,embed2,embed3,embed4,embed5,embed6]
-        await channel.send(f'New Bug Reported! <@344034871230070784>')
+        await channel.send(f'New Bug Reported! <@{OWNER_ID}>')
         try:
             await dm.send(f'Here is a copy of your submission')
             await interaction.response.send_message(f'Thank you for your submission! A copy of your subbmission has been sent to your dms', ephemeral=True)
@@ -55,18 +63,17 @@ async def info_data():
                 the bot will send a banner card to the designated channel every time a new member joins the server. The banner card will include the new member's name and profile picture.\n\n \
                 The welcome module is a great way to make new members feel welcomed and included in your server. Have fun greeting your new members!    ",
            "field":{
-                "Thins": 'you can do lots of things',
-                "More":'you can do whatever you want',
-                "Message":'message'
             }
         },
         "logging": {
             "title": "LOGGING",
-            "description": "Sends a welcome message to the welcome channel",
+            "description": "The Logging module is a comprehensive tracking system designed to keep a detailed record of all activities within your server. It helps maintain order and provides valuable insights into user interactions.\n\n \
+             **All:** This captures every single event on the server, giving you a complete overview in one place. \n\n  **Server Logging:** Tracks key server-wide events, such as role changes, channel updates, and server settings alterations. \n\n \
+             **Member** Logging: Monitors individual member actions like joins, leaves, nickname changes, and role assignments. \n\n **Moderation Logging:** Records all moderation actions, such as kicks, bans, mutes, and warnings, providing a clear audit trail for moderators' actions. \n\n \
+             **Message Logging:** Keeps a record of message activities, including message edits and deletions, which can be crucial for resolving disputes and monitoring compliance with server rules. \n\n \
+             **Voice Logging:** Logs all voice channel activities, such as users joining or leaving voice channels, which can be useful for managing voice chat and resolving any related issues. \n\n **Invite Logging:** Tracks who is inviting new members to the server with their invite links, allowing you to understand how new members are finding your server. \n\n \
+             **Activity Logging:** Keeps track of user statuses, such as when members start or stop playing games. This allows moderators to see who is active and what games are popular within the community. \n\n This Logging module is an essential tool for administrators and moderators to ensure a safe and well-managed Discord community.",
            "field":{
-                "Thins": 'you can do lots of things',
-                "More":'you can do whatever you want',
-                "Message":'message'
             }
         },
         "report": {
@@ -76,9 +83,6 @@ async def info_data():
                 This report will be sent to the server moderators.\n\nIf members right-click on a message, they will see an option to report the message. If they select this option, they will be asked to provide a reason for the report.\n \
                 This report will be sent to the server moderators.",
            "field":{
-                "Thins": 'you can do lots of things',
-                "More":'you can do whatever you want',
-                "Message":'message'
             }
         },        
         "guess": {
@@ -88,9 +92,6 @@ async def info_data():
                 If you try to guess the number 5 times without success, the bot will give you a hint by saying the number is between two specific numbers (e.g. \"The number is between 50 and 75\").\n\n\
                 The first person to guess the correct number wins the event. Have fun guessing!",
            "field":{
-                "Thins": 'you can do lots of things',
-                "More":'you can do whatever you want',
-                "Message":'message'
             }
         },
         "count": {
@@ -100,9 +101,6 @@ async def info_data():
                 Rules:\nOnly numbers are allowed (no decimals or negative numbers).\nYou must type the next number in the sequence (e.g. if the last number typed was 3, you must type 4).\n \
                 Do not type a number that has already been used.\nDo not spam the channel with numbers.",
            "field":{
-                "Thins": 'you can do lots of things',
-                "More":'you can do whatever you want',
-                "Message":'message'
             }
         },       
     } 
@@ -159,7 +157,7 @@ async def data(interaction, update=None):
         },
         "report": {
             "title": "Report",
-            "description": "Logs everything happening in the server.",
+            "description": "Allows members to report issues or user conduct directly to the server moderation team.",
            "field":{
                 "Status": stat,
                 "Channel":f'<#{channel}>',
@@ -167,7 +165,7 @@ async def data(interaction, update=None):
         },        
         "guess": {
             "title": "GUESS NUMBER",
-            "description": "Members try to guess the random generated number",
+            "description": "A fun mini-game where members can guess a number for a chance to win server rewards.",
             "field":{
                 "Status": stat,
                 "Channel": f'<#{channel}>',
@@ -177,7 +175,7 @@ async def data(interaction, update=None):
         },
         "count": {
             "title": "Count Number",
-            "description": "Logs everything happening in the server.",
+            "description": " A collaborative game where members count upwards and try not to break the number sequence for rewards.",
             "field":{
                 "Status": stat,
                 "Channel":f'<#{channel}>',
@@ -213,9 +211,9 @@ async def modules_info(interaction):
 
 def SecondEmbed(self, interaction):
     embed=discord.Embed(title=f'Modules for {interaction.guild.name} ', description='You can enabled or disable modules for your server.')
-    embed.add_field(name='GENERAL MODULES', value= f'Welcome\nLogging', inline=True)
-    embed.add_field(name='SECURITY MODULES', value='Report', inline=True)
-    embed.add_field(name='FUN MODULES', value='Guess Number\nCount Number', inline=True)  
+    embed.add_field(name='GENERAL MODULES', value= f'⚒️ Welcome\n⚙️ Logging', inline=True)
+    embed.add_field(name='SECURITY MODULES', value='⭕ Report', inline=True)
+    embed.add_field(name='FUN MODULES', value='💯 Guess Number\n🔢 Count Number', inline=True)  
     return embed  
 
 class Channel(discord.ui.Modal, title='Set Channel'):
@@ -323,7 +321,7 @@ class NodbView(discord.ui.View):
         super().__init__()
         self.hint= '' 
 
-    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:main:1057073241753124864>')
+    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji= e.home_emoji)
     async def back_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.edit_message(embed=SecondEmbed(self,interaction), view=NewModuleView())
 
@@ -348,7 +346,7 @@ class ModuleView(discord.ui.View):
         self.button=self.view.button
 
 
-    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:main:1057073241753124864>')
+    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji= e.home_emoji)
     async def back_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.edit_message(embed=SecondEmbed(self,interaction), view=NewModuleView())
 
@@ -378,7 +376,7 @@ class ModuleView(discord.ui.View):
 
 
 
-    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:info:1057118591733989457>', row=1)
+    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji= e.info_emoji, row=1)
     async def info_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.defer()
         await interaction.followup.send(embed= await modules_info(interaction), ephemeral=True)
@@ -401,20 +399,20 @@ class NewModuleView(discord.ui.View):
     def MainEmbed(self, interaction):
         embed=discord.Embed(
             title="",
-            description='Commands in this server start with `?`',
+            description='Commands in this server start with `!`',
             color= 0x303434)
         embed.add_field(name="・Help Panel", value="Welcome to Husky Bot's help panel! We have made a small overview to help you! \
             Make a choice via the menu below.", inline=False)    
-        embed.add_field(name="・Links", value="[Invite](https://discord.com/api/oauth2/authorize?client_id=1049143343084490862&permissions=8&scope=bot) : [Support Server](https://discord.gg/a2R2KbFVWT) : [Status](https://huskybot1.statuspage.io/)", inline=False)   
+        embed.add_field(name="・Links", value=f"[Invite]({BOT_INVITE_LINK}) : [Support Server]({GUILD_INVITE}) : [Status]({STATUS_PAGE})", inline=False)   
         embed.set_author(name=interaction.guild.name, icon_url=interaction.guild.icon)        
         return embed
 
     @discord.ui.select(placeholder="Select a module first",max_values=1,min_values=1, options=[
             discord.SelectOption(label="Welcome",value= "welcome",emoji="⚒️",description="Sends a welcome message to the welcome channel"),
-            discord.SelectOption(label="Logging",value= "logging",emoji="⚙️",description="Logs everythin happening in the server."),
-            discord.SelectOption(label="Report",value= "report",emoji="⭕",description="Logs everythin happening in the server."),
-            discord.SelectOption(label="Guess Number",value= "guess",emoji="💯",description="Logs everythin happening in the server."),
-            discord.SelectOption(label="Count Number",value= "count",emoji="🔢",description="Logs everythin happening in the server."),                  
+            discord.SelectOption(label="Logging",value= "logging",emoji="⚙️",description="Logs everything happening in the server."),
+            discord.SelectOption(label="Report",value= "report",emoji="⭕",description="Let members report a user to the server moderation team."),
+            discord.SelectOption(label="Guess Number",value= "guess",emoji="💯",description="A fun mini-game, members guess the secret number."),
+            discord.SelectOption(label="Count Number",value= "count",emoji="🔢",description="Take turns to count up in sequence."),                  
             ])     
     async def select_callback(self, interaction: discord.Interaction, select:discord.ui.Select):
         global module
@@ -446,14 +444,14 @@ class NewModuleView(discord.ui.View):
         await interaction.response.edit_message(embed=embed, view=view)
 
 
-    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji='<:main:1057073241753124864>')
+    @discord.ui.button(label='', style=discord.ButtonStyle.primary, emoji= e.home_emoji)
     async def back_button(self, interaction:discord.Interaction, button:discord.ui.Button):
         await interaction.response.edit_message(embed=self.MainEmbed(interaction), view=MainView())
 
 class MainView(discord.ui.View):
     def __init__(self):
         super().__init__()   
-        self.add_item(discord.ui.Button(label="Support",style=discord.ButtonStyle.link,url="https://discord.gg/a2R2KbFVWT", emoji='<:support:1057062148007792730>'))
+        self.add_item(discord.ui.Button(label="Support",style=discord.ButtonStyle.link,url= GUILD_INVITE, emoji= e.support_emoji))
     
     @discord.ui.select(placeholder="Select an option",max_values=1,min_values=1,options=[
             discord.SelectOption(label="Commands",emoji="⚒️",description="Show the bot commands",),
@@ -470,7 +468,8 @@ class MainView(discord.ui.View):
         elif select.values[0] == 'Commands':
             embed=discord.Embed(title='・Help Panel', description='View all command categories in the bot here!')
             embed.add_field(name='General Commands', value='`avatar`\n`echo`\n`huskies`\n`stats`')
-            embed.add_field(name='Moderation Commands', value='`ban`\n`unban`\n`kick`\n`lock`')
+            embed.add_field(name='Moderation Commands', value='`ban`\n`unban`\n`kick`')
+            embed.add_field(name='Fun Commands', value='`rockpaperscissors`\n`guess`\n`slot`\n`roll`\n`dropout_chance`')       
             embed.add_field(name='Server Config Commands', value='`prefix`\n`welcome`\n`logging`')
             embed.add_field(name='Owner Commands', value='`reload`\n`resetdb`')    
             await interaction.response.edit_message(embed=embed, view=None)
@@ -492,7 +491,7 @@ class MainView(discord.ui.View):
             dpy_version= discord.__version__
             server_count= len(interaction.client.guilds)
             member_count= len(interaction.guild.members)
-            embed=discord.Embed(title= f'{interaction.client.user.name} Bot Statistics', description="<a:ttopleft:1056637361993306192><a:ttopright:1056637363004125274>\n<a:tbuttomleft:1056637360273625168><a:tbuttomright:1056637361259294730>", color=interaction.user.colour, timestamp=interaction.message.created_at)
+            embed=discord.Embed(title= f'{interaction.client.user.name} Bot Statistics', description="", color=interaction.user.colour, timestamp=interaction.message.created_at)
             embed.add_field(name='Python V.', value= f'```{python_version}```')
             embed.add_field(name='Discord.py V.', value= f'```{dpy_version}```')
             embed.add_field(name='CPU Usage', value=f'```{psutil.cpu_percent()}%```')
@@ -539,11 +538,11 @@ class Help(commands.Cog):
     async def help(self, interaction: discord.Interaction):
         embed=discord.Embed(
             title="",
-            description='Commands in this server start with `?`',
+            description=f'## Welcome to Husky Bot\'s Help Panel\n\nCommands in this server start with `!`',
             color= 0x303434)
-        embed.add_field(name="・Help Panel", value="Welcome to Husky Bot's help panel! We have made a small overview to help you! \
+        embed.add_field(name="・Help Panel", value="We have made a small overview to help you! \
             Make a choice via the menu below.", inline=False)    
-        embed.add_field(name="・Links", value="[Invite](https://discord.com/api/oauth2/authorize?client_id=1049143343084490862&permissions=8&scope=bot) : [Support Server](https://discord.gg/a2R2KbFVWT) : [Status](https://huskybot1.statuspage.io/)", inline=False)   
+        embed.add_field(name="・Links", value=f"[Invite]({BOT_INVITE_LINK}) : [Support Server]({GUILD_INVITE}) : [Status]({STATUS_PAGE})", inline=False)   
         embed.set_author(name=interaction.guild.name, icon_url=interaction.guild.icon)
         await interaction.response.send_message(embed=embed, view=MainView(), ephemeral=True)
 

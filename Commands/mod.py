@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord import app_commands
 from datetime import datetime
 from easy_pil import Editor, load_image_async, Font
+import emotes as e
 
 class Mod(commands.Cog):
     def __init__(self, bot):
@@ -13,7 +14,7 @@ class Mod(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(kick_members=True)
     async def kick(self,ctx,member:discord.Member, *, reason = None):
-        #await ctx.guild.kick(user=member, reason= f'{ctx.author.name}:{reason}')
+        await ctx.guild.kick(user=member, reason= f'{ctx.author.name}:{reason}')
         embed= discord.Embed(title= f'{ctx.author.name} kicked: {member.name}', description=reason)
         await ctx.channel.send(embed=embed)
 
@@ -33,8 +34,8 @@ class Mod(commands.Cog):
 
                 await ctx.guild.ban(user=member, reason= f'{ctx.author.name}#{ctx.author.discriminator}: {reason}')
                 reason= f'`{reason}`'
-                if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
-                if reason[1:-1] == '<:no_data:1055471334542553139>': reason= '<:no_data:1055471334542553139>'
+                if reason[1:-1] == 'None': reason= e.no_data_emoji
+                if reason[1:-1] == e.no_data_emoji: reason= e.no_data_emoji
                 embed= discord.Embed(title= '', description=f'{member.mention} **has been banned by** {ctx.author.mention}\n**Reason:** {reason}')
                 embed.set_author(name= f'{ctx.channel.guild.name} Security 🛡️', icon_url=ctx.channel.guild.icon)
                 embed.set_thumbnail(url='attachment://pic1.png')        
@@ -49,7 +50,7 @@ class Mod(commands.Cog):
         member= await self.bot.fetch_user(int(member))
         await ctx.guild.unban(member, reason= f'{ctx.author.name}#{ctx.author.discriminator}: {reason}')
         reason= f'`{reason}`'
-        if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
+        if reason[1:-1] == 'None': reason= e.no_data_emoji
         embed= discord.Embed(title= '', description=f'{member.mention} **\'s ban has been lifted by** {ctx.author.mention}\n**Reason:** {reason}')
         embed.set_author(name= f'{ctx.channel.guild.name} Security 🛡️', icon_url=ctx.channel.guild.icon)        
         embed.set_thumbnail(url='https://imgur.com/EhBcoNW.png')
@@ -60,6 +61,8 @@ class Mod(commands.Cog):
     @commands.guild_only()
     @commands.has_guild_permissions(manage_messages=True)
     async def purge(self,ctx,amount=15):
+        # This is a prototype I was working on which would possibly let enable or disabling commands.
+        # If it doesn't work just remove db checks.
         try:
             if not ctx.author.bot: 
                 await self.bot.server_config.find_field(ctx.guild.id, 'commands', 'logging_cmnd')

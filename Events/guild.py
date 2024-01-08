@@ -2,6 +2,9 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from datetime import datetime
+import os 
+
+BOT_STATUS_CHANNEL_ID = int(os.getenv("BOT_STATUS_CHANNEL_ID"))
 
 class Guild(commands.Cog):
     def __init__(self, bot):
@@ -23,7 +26,7 @@ class Guild(commands.Cog):
                     break
 
 #sends server info to support server
-        channel= self.bot.get_channel(1055959347362017450)
+        channel= self.bot.get_channel(BOT_STATUS_CHANNEL_ID)
         embed=discord.Embed(title=f'{self.bot.user.name} has joined a new server', description='', timestamp= datetime.now(),color= discord.Colour.dark_teal())
         embed.add_field(name='Server', value=f'{guild.name}')
         embed.add_field(name='Member #', value=len(guild.members))
@@ -50,7 +53,7 @@ class Guild(commands.Cog):
 
 
 #sends server info to support server
-        channel= self.bot.get_channel(1055959347362017450)
+        channel= self.bot.get_channel(BOT_STATUS_CHANNEL_ID)
         embed=discord.Embed(title=f'{self.bot.user.name} has left a server', description='',timestamp= datetime.now(),color= 0xf7445a)
         embed.add_field(name='Server', value=f'{guild.name}')
         embed.add_field(name='Member #', value=len(guild.members))

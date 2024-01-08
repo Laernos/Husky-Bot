@@ -3,6 +3,11 @@ from discord.ext import commands
 from discord import app_commands
 from datetime import datetime
 import asyncio
+import os
+import emotes as e
+
+
+BOT_ID = int(os.getenv("BOT_ID"))
 
 """
 !CAUTION!:
@@ -511,17 +516,17 @@ class Logging(commands.Cog):
                     channell=self.bot.get_channel(int(b))
                     reason= f'`{entry.reason}`'
                     author= entry.user
-                    if entry.user.id == 1049143343084490862:
+                    if entry.user.id == BOT_ID:
                         rea= entry.reason.split(':')
                         reason= rea[1]
                         reason= f'`{reason[1:]}`'
                         aut=rea[0].split('#')
                         author= discord.utils.get(self.bot.get_all_members(), name= aut[0], discriminator=aut[1])
-                    if reason is None: reason = '<:no_data:1055471334542553139>'
-                    if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
+                    if reason is None: reason = e.no_data_emoji
+                    if reason[1:-1] == 'None': reason= e.no_data_emoji
                     embed= discord.Embed(
-                        title='<:ban:1054132708688809985>  __BAN__  <:ban:1054132708688809985>',
-                        description= f'<:prisoner:1054134753504268361> **USER:** {user.mention}, {user.name}#{user.discriminator}\n<:log:1054135131855671366> **REASON:** {reason}',
+                        title= e.ban_emoji + '  __BAN__  ' + e.ban_emoji,
+                        description= f'{e.prisoner_emoji} **USER:** {user.mention}, {user.name}#{user.discriminator}\n{e.log_emoji} **REASON:** {reason}',
                         timestamp= datetime.now(),
                         color= 0xf7445a) 
                     embed.set_footer(text=f'🆔 {user.id}')
@@ -541,17 +546,17 @@ class Logging(commands.Cog):
                     channell=self.bot.get_channel(int(b))
                     reason= f'`{entry.reason}`'
                     author= entry.user
-                    if entry.user.id == 1049143343084490862:
+                    if entry.user.id == BOT_ID:
                         rea= entry.reason.split(':')
                         reason= rea[1]
                         reason= f'`{reason[1:]}`'
                         aut=rea[0].split('#')
                         author= discord.utils.get(self.bot.get_all_members(), name= aut[0], discriminator=aut[1])
-                    if reason is None: reason = '<:no_data:1055471334542553139>'
-                    if reason[1:-1] == 'None': reason= '<:no_data:1055471334542553139>'
+                    if reason is None: reason = e.no_data_emoji
+                    if reason[1:-1] == 'None': reason= e.no_data_emoji
                     embed= discord.Embed(
-                        title='<:unban:1054239050795585546>  __UNBAN__  <:unban:1054239050795585546>',
-                        description= f'<:prisoner:1054134753504268361> **USER:** {user.mention}, {user.name}#{user.discriminator}\n<:log:1054135131855671366> **REASON:** {reason}',
+                        title= e.unban_emoji + '  __UNBAN__  ' + e.unban_emoji,
+                        description= f'{e.prisoner_emoji} **USER:** {user.mention}, {user.name}#{user.discriminator}\n{e.log_emoji} **REASON:** {reason}',
                         timestamp= datetime.now(),
                         color= discord.Colour.dark_teal()) 
                     embed.set_footer(text=f'🆔 {user.id}')

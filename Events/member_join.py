@@ -16,7 +16,7 @@ class Member_join(commands.Cog):
             if a is True:
                 b=await self.bot.server_config.find_field_value(member.guild.id, 'modules', 'welcome', 'channel')
                 channel=self.bot.get_channel(int(b))
-                background= Editor('pic3.png')
+                background= Editor('welcome_banner.png')
                 profile_image = await load_image_async(str(member.avatar.url))
                 profile = Editor(profile_image).resize((386,386)).circle_image()
                 poppins = Font.poppins(size=80, variant='bold')
