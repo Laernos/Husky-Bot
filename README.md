@@ -5,11 +5,11 @@
 Husky Bot is a Discord bot that is designed to help manage your Discord server. It includes a wide range of features, including moderation tools, utility commands, and fun commands to keep your server engaged.
 
 ## Table of Contents
-- ✨ [Features](#features)
-- 📜 [Commands](#commands)
-- 🛠️ [Installation](#installation)
-- 🤝 [Contributing](#contributing)
-- 📄 [License](#license)
+- ✨ [Features](#✨features)
+- 📜 [Commands](#📜commands)
+- 🛠️ [Installation](#🛠️installation)
+- 🤝 [Contributing](#🤝contributing)
+- 📄 [License](#📄license)
 
 ## ✨Features
 
@@ -185,7 +185,7 @@ The welcome module is a great way to make new members feel welcomed and included
 </details>
 
 
-## 📜 Commands
+## 📜Commands
 
 **General Commands**  
 - `avatar`: Displays the user's avatar.  
@@ -309,12 +309,12 @@ Follow these steps to install and set up Husky:
 </details>
 <br>
 
-## 🤝 Contributing
+## 🤝Contributing
 
 Contributions are welcomed to Husky! If you have ideas for improvements or want to report issues, please [open an issue](https://github.com/Laernos/Husky/issues) or submit a pull request.
 <br><br>
 
-## 📄 License
+## 📄License
 
 Husky is licensed under the [MIT](LICENSE). If you plan to use any part of this source code in your own bot, please include appropriate credit.
 
