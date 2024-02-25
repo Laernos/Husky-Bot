@@ -318,7 +318,3 @@ Contributions are welcomed to Husky! If you have ideas for improvements or want 
 
 Husky is licensed under the [MIT](LICENSE). If you plan to use any part of this source code in your own bot, please include appropriate credit.
 
-<br>
-
-> [!WARNING]
-> Just a friendly reminder that while Husky Bot comes packed with cool features, I haven't had the chance to do a full-on security check. So, you might want to take a look under the hood to ensure everything is functioning as it should.
