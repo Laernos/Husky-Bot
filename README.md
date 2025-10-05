@@ -14,7 +14,7 @@ Husky Bot is a Discord bot that is designed to help manage your Discord server. 
 ## Features
 
 <details>
-<summary>Responsive Module Management</summary>
+<summary>Responsive Module Management - (click to expand)</summary>
 <br><table><tr>
 <td valign="top">
 Turn modules on or off with an intuitive toggle system, giving you complete control over your server's functionality.
